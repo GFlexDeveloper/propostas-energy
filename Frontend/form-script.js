@@ -68,6 +68,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function tornarCamposObrigatorios(obrigatorio) {
         const campos = ['tipoConsumo', 'tipoPadrao', 'geracaoPropria'];
         
+        // Campos de endereço sempre obrigatórios
+        const camposEndereco = ['rua', 'numero', 'bairro', 'cidade', 'estado', 'cep'];
+        camposEndereco.forEach(campo => {
+            const element = document.getElementById(campo);
+            if (element) {
+                element.required = true;
+            }
+        });
+        
         campos.forEach(campo => {
             const element = document.getElementById(campo);
             if (element) {
@@ -114,6 +123,106 @@ document.addEventListener('DOMContentLoaded', function() {
             if (confirm('Deseja voltar para a tela inicial? Os dados não salvos serão perdidos.')) {
                 window.location.href = 'index.html';
             }
+        });
+    }
+
+    // NOVAS FUNÇÕES PARA OS CAMPOS ADICIONAIS
+
+    // Buscar endereço pelo CEP
+    async function buscarEnderecoPorCEP() {
+        const cep = document.getElementById('cep').value.replace(/\D/g, '');
+        
+        if (cep.length !== 8) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await response.json();
+            
+            if (!data.erro) {
+                document.getElementById('rua').value = data.logradouro || '';
+                document.getElementById('bairro').value = data.bairro || '';
+                document.getElementById('cidade').value = data.localidade || '';
+                document.getElementById('estado').value = data.uf || '';
+            } else {
+                alert('CEP não encontrado. Por favor, verifique o CEP informado.');
+            }
+        } catch (error) {
+            console.error('Erro ao buscar CEP:', error);
+            alert('Erro ao buscar CEP. Tente novamente.');
+        }
+    }
+
+    // Formatar CEP
+    function formatarCEP(cep) {
+        cep = cep.replace(/\D/g, '');
+        if (cep.length > 5) {
+            cep = cep.replace(/^(\d{5})(\d)/, '$1-$2');
+        }
+        return cep.substring(0, 9);
+    }
+
+    // Formatar CPF/CNPJ
+    function formatarDocumento(documento) {
+        documento = documento.replace(/\D/g, '');
+        
+        if (documento.length <= 11) {
+            // Formatar como CPF
+            documento = documento.replace(/(\d{3})(\d)/, '$1.$2');
+            documento = documento.replace(/(\d{3})(\d)/, '$1.$2');
+            documento = documento.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        } else {
+            // Formatar como CNPJ
+            documento = documento.replace(/^(\d{2})(\d)/, '$1.$2');
+            documento = documento.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+            documento = documento.replace(/\.(\d{3})(\d)/, '.$1/$2');
+            documento = documento.replace(/(\d{4})(\d)/, '$1-$2');
+        }
+        
+        return documento;
+    }
+
+    // Formatar telefone
+    function formatarTelefone(telefone) {
+        telefone = telefone.replace(/\D/g, '');
+        
+        if (telefone.length <= 10) {
+            telefone = telefone.replace(/(\d{2})(\d)/, '($1) $2');
+            telefone = telefone.replace(/(\d{4})(\d)/, '$1-$2');
+        } else {
+            telefone = telefone.replace(/(\d{2})(\d)/, '($1) $2');
+            telefone = telefone.replace(/(\d{5})(\d)/, '$1-$2');
+        }
+        
+        return telefone;
+    }
+
+    // NOVOS EVENT LISTENERS PARA OS CAMPOS ADICIONAIS
+    
+    // Buscar endereço quando CEP perder o foco
+    const cepInput = document.getElementById('cep');
+    if (cepInput) {
+        cepInput.addEventListener('blur', buscarEnderecoPorCEP);
+        
+        cepInput.addEventListener('input', function(e) {
+            e.target.value = formatarCEP(e.target.value);
+        });
+    }
+    
+    // Formatar CPF/CNPJ em tempo real
+    const cpfCnpjInput = document.getElementById('cpfCnpj');
+    if (cpfCnpjInput) {
+        cpfCnpjInput.addEventListener('input', function(e) {
+            e.target.value = formatarDocumento(e.target.value);
+        });
+    }
+    
+    // Formatar telefone em tempo real
+    const contatoInput = document.getElementById('contato');
+    if (contatoInput) {
+        contatoInput.addEventListener('input', function(e) {
+            e.target.value = formatarTelefone(e.target.value);
         });
     }
 
@@ -226,6 +335,41 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
+    // Função para validar formulário completo
+    function validarFormulario() {
+        const camposObrigatorios = [
+            'nome', 'cpfCnpj', 'contato', 'classe', 'tipoTensao',
+            'rua', 'numero', 'bairro', 'cidade', 'estado', 'cep',
+            'numeroInstalacao'
+        ];
+
+        // Se for baixa tensão, validar campos adicionais
+        const tipoTensaoVal = document.getElementById('tipoTensao').value;
+        if (tipoTensaoVal === 'baixa') {
+            camposObrigatorios.push('tipoPadrao', 'geracaoPropria');
+        }
+
+        const missing = camposObrigatorios.filter(field => {
+            const element = document.getElementById(field);
+            return !element || !element.value;
+        });
+
+        if (missing.length > 0) {
+            alert('Por favor, preencha todos os campos obrigatórios.');
+            
+            // Rolagem para o primeiro campo faltante
+            const firstMissing = document.getElementById(missing[0]);
+            if (firstMissing) {
+                firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstMissing.focus();
+            }
+            
+            return false;
+        }
+
+        return true;
+    }
+
     // Enviar formulário
     if (proposalForm) {
         proposalForm.addEventListener('submit', async function(e) {
@@ -302,37 +446,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Função para validar formulário completo
-    function validarFormulario() {
-        const camposObrigatorios = [
-            'nome', 'cpfCnpj', 'endereco', 'numeroInstalacao', 
-            'contato', 'tipoTensao'
-        ];
-
-        // Se for baixa tensão, validar campos adicionais
-        const tipoTensaoVal = document.getElementById('tipoTensao').value;
-        if (tipoTensaoVal === 'baixa') {
-            camposObrigatorios.push('tipoPadrao', 'geracaoPropria');
-        }
-
-        const missing = camposObrigatorios.filter(field => {
-            const element = document.getElementById(field);
-            return !element.value;
-        });
-
-        if (missing.length > 0) {
-            alert('Por favor, preencha todos os campos obrigatórios.');
-            return false;
-        }
-
-        return true;
-    }
-
     // Função para resetar campos dinâmicos
     function resetarCamposDinamicos() {
         // Mostrar seção de baixa tensão por padrão
-        secaoBaixaTensao.style.display = 'block';
-        secaoBaixaTensao.classList.remove('hidden');
+        if (secaoBaixaTensao) {
+            secaoBaixaTensao.style.display = 'block';
+            secaoBaixaTensao.classList.remove('hidden');
+        }
         // Resetar tipo de consumo para mensal
         if (tipoConsumo) tipoConsumo.value = 'mensal';
         if (consumoMensal) consumoMensal.classList.remove('hidden');
@@ -343,5 +463,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (valorKwhInput) valorKwhInput.value = VALOR_KWH_PADRAO;
         // Resetar tipo de tensão
         if (tipoTensao) tipoTensao.value = '';
+        // Resetar distribuidora para CEMIG
+        const distribuidoraInput = document.getElementById('distribuidora');
+        if (distribuidoraInput) distribuidoraInput.value = 'CEMIG';
+        // Resetar classe
+        const classeInput = document.getElementById('classe');
+        if (classeInput) classeInput.value = '';
     }
 });
