@@ -6,8 +6,24 @@
     <title>Flex Energy - Proposta Manual</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="form-style.css">
+    <style>
+        /* Garantir que tudo fique escondido até a animação carregar */
+        body.loading .form-section,
+        body.loading .buttons-container {
+            opacity: 0;
+        }
+        
+        /* Estado inicial da seção de baixa tensão */
+        #secaoBaixaTensao {
+            display: none;
+        }
+        
+        #secaoBaixaTensao:not(.hidden) {
+            display: block;
+        }
+    </style>
 </head>
-<body>
+<body class="loading">
     <div class="logo-container">
         <div class="logo-icon">
             <svg viewBox="0 0 24 24">
@@ -59,122 +75,140 @@
                         <label for="email">E-mail (Opcional)</label>
                         <input type="email" id="email" name="email">
                     </div>
-                </div>
-            </div>
-            
-            <div class="form-section">
-                <h2 class="section-title">Informações de Consumo</h2>
-                
-                <div class="form-row">
+                    
+                    <!-- Tipo de Tensão movido para cá -->
                     <div class="form-group">
-                        <label for="tipoConsumo">Tipo de Preenchimento</label>
-                        <select id="tipoConsumo" name="tipoConsumo">
-                            <option value="mensal">Valor de Consumo por Mês</option>
-                            <option value="media">Média de Consumo</option>
+                        <label for="tipoTensao">Tipo de Tensão</label>
+                        <select id="tipoTensao" name="tipoTensao" required>
+                            <option value="">Selecione...</option>
+                            <option value="baixa">Baixa Tensão</option>
+                            <option value="media">Média Tensão</option>
                         </select>
                     </div>
                 </div>
-                
-                <div id="consumoMensal">
-                    <div class="consumption-grid">
-                        <div class="consumption-item">
-                            <label for="janeiro">Janeiro</label>
-                            <input type="number" id="janeiro" name="janeiro" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="fevereiro">Fevereiro</label>
-                            <input type="number" id="fevereiro" name="fevereiro" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="marco">Março</label>
-                            <input type="number" id="marco" name="marco" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="abril">Abril</label>
-                            <input type="number" id="abril" name="abril" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="maio">Maio</label>
-                            <input type="number" id="maio" name="maio" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="junho">Junho</label>
-                            <input type="number" id="junho" name="junho" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="julho">Julho</label>
-                            <input type="number" id="julho" name="julho" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="agosto">Agosto</label>
-                            <input type="number" id="agosto" name="agosto" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="setembro">Setembro</label>
-                            <input type="number" id="setembro" name="setembro" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="outubro">Outubro</label>
-                            <input type="number" id="outubro" name="outubro" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="novembro">Novembro</label>
-                            <input type="number" id="novembro" name="novembro" min="0" step="0.01">
-                        </div>
-                        <div class="consumption-item">
-                            <label for="dezembro">Dezembro</label>
-                            <input type="number" id="dezembro" name="dezembro" min="0" step="0.01">
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="consumoMedia" class="hidden">
+            </div>
+            
+            <!-- SEÇÃO PARA BAIXA TENSÃO (aparece apenas se for baixa tensão) -->
+            <div id="secaoBaixaTensao">
+                <div class="form-section">
+                    <h2 class="section-title">Informações de Consumo</h2>
+                    
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="mediaConsumo">Média de Consumo (kWh/mês)</label>
-                            <input type="number" id="mediaConsumo" name="mediaConsumo" min="0" step="0.01">
+                            <label for="tipoConsumo">Tipo de Preenchimento</label>
+                            <select id="tipoConsumo" name="tipoConsumo">
+                                <option value="mensal">Valor de Consumo por Mês</option>
+                                <option value="media">Média de Consumo</option>
+                            </select>
                         </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-section">
-                <h2 class="section-title">Configurações Técnicas</h2>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="tipoPadrao">Tipo de Padrão</label>
-                        <select id="tipoPadrao" name="tipoPadrao" required>
-                            <option value="">Selecione...</option>
-                            <option value="monofasico">Monofásico</option>
-                            <option value="bifasico">Bifásico</option>
-                            <option value="trifasico">Trifásico</option>
-                        </select>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="geracaoPropria">Possui Geração Própria?</label>
-                        <select id="geracaoPropria" name="geracaoPropria" required>
-                            <option value="">Selecione...</option>
-                            <option value="sim">Sim</option>
-                            <option value="nao">Não</option>
-                        </select>
+                    <div id="consumoMensal">
+                        <div class="consumption-grid">
+                            <div class="consumption-item">
+                                <label for="janeiro">Janeiro</label>
+                                <input type="number" id="janeiro" name="janeiro" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="fevereiro">Fevereiro</label>
+                                <input type="number" id="fevereiro" name="fevereiro" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="marco">Março</label>
+                                <input type="number" id="marco" name="marco" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="abril">Abril</label>
+                                <input type="number" id="abril" name="abril" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="maio">Maio</label>
+                                <input type="number" id="maio" name="maio" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="junho">Junho</label>
+                                <input type="number" id="junho" name="junho" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="julho">Julho</label>
+                                <input type="number" id="julho" name="julho" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="agosto">Agosto</label>
+                                <input type="number" id="agosto" name="agosto" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="setembro">Setembro</label>
+                                <input type="number" id="setembro" name="setembro" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="outubro">Outubro</label>
+                                <input type="number" id="outubro" name="outubro" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="novembro">Novembro</label>
+                                <input type="number" id="novembro" name="novembro" min="0" step="0.01">
+                            </div>
+                            <div class="consumption-item">
+                                <label for="dezembro">Dezembro</label>
+                                <input type="number" id="dezembro" name="dezembro" min="0" step="0.01">
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                <div id="injecaoMedia" class="hidden">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="mediaInjecao">Média de Injeção (kWh/mês)</label>
-                            <input type="number" id="mediaInjecao" name="mediaInjecao" min="0" step="0.01">
+                    
+                    <div id="consumoMedia" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="mediaConsumo">Média de Consumo (kWh/mês)</label>
+                                <input type="number" id="mediaConsumo" name="mediaConsumo" min="0" step="0.01">
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="desconto">Valor de Desconto (%)</label>
-                        <input type="number" id="desconto" name="desconto" min="0" max="100" step="0.01" value="0">
+                <div class="form-section">
+                    <h2 class="section-title">Configurações Técnicas</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tipoPadrao">Tipo de Padrão</label>
+                            <select id="tipoPadrao" name="tipoPadrao">
+                                <option value="">Selecione...</option>
+                                <option value="monofasico">Monofásico</option>
+                                <option value="bifasico">Bifásico</option>
+                                <option value="trifasico">Trifásico</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="geracaoPropria">Possui Geração Própria?</label>
+                            <select id="geracaoPropria" name="geracaoPropria">
+                                <option value="">Selecione...</option>
+                                <option value="sim">Sim</option>
+                                <option value="nao">Não</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="injecaoMedia" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="mediaInjecao">Média de Injeção (kWh/mês)</label>
+                                <input type="number" id="mediaInjecao" name="mediaInjecao" min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="desconto">Valor de Desconto (%)</label>
+                            <input type="number" id="desconto" name="desconto" min="0" max="100" step="0.01" value="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="valorKwh">Valor do kWh (R$)</label>
+                            <input type="number" id="valorKwh" name="valorKwh" min="0" step="0.01" value="1.19">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -198,7 +232,7 @@
     </div>
 
     <div class="footer">
-        &copy; 2023 Flex Energy - Todos os direitos reservados
+        &copy; 2025 Flex Energy - Todos os direitos reservados
     </div>
 
     <script src="script.js"></script>
