@@ -56,63 +56,10 @@ db.exec(`
 console.log('✅ Tabela propostas criada/verificada com better-sqlite3');
 
 
-// Função para inserir proposta (sintaxe better-sqlite3)
-function inserirProposta(proposta) {
-  try {
-    const sql = `
-      INSERT INTO propostas (
-        nome, cpf_cnpj, endereco, numero_instalacao, contato, email, tipo_consumo,
-        janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro,
-        media_consumo, tipo_padrao, geracao_propria, media_injecao, desconto,
-        tipo_tensao, valor_kwh, economia_media, economia_anual,
-        valor_pago_flex_media, valor_pago_flex_anual, valor_pago_cemig_media, valor_pago_cemig_anual
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+const database = require('./database');
 
-    const stmt = db.prepare(sql);
-    const result = stmt.run(
-      proposta.nome,
-      proposta.cpfCnpj,
-      proposta.endereco,
-      proposta.numeroInstalacao,
-      proposta.contato,
-      proposta.email || null,
-      proposta.tipoConsumo,
-      proposta.janeiro || null,
-      proposta.fevereiro || null,
-      proposta.marco || null,
-      proposta.abril || null,
-      proposta.maio || null,
-      proposta.junho || null,
-      proposta.julho || null,
-      proposta.agosto || null,
-      proposta.setembro || null,
-      proposta.outubro || null,
-      proposta.novembro || null,
-      proposta.dezembro || null,
-      proposta.mediaConsumo || null,
-      proposta.tipoPadrao,
-      proposta.geracaoPropria,
-      proposta.mediaInjecao || null,
-      proposta.desconto || 0,
-      // Novos campos
-      proposta.tipoTensao,
-      proposta.valorKwh || 1.19,
-      proposta.economiaMedia || 0,
-      proposta.economiaAnual || 0,
-      // Novos campos de valores pagos
-      proposta.valorPagoFlexMedia || 0,
-      proposta.valorPagoFlexAnual || 0,
-      proposta.valorPagoCemigMedia || 0,
-      proposta.valorPagoCemigAnual || 0
-    );
+// Na rota POST /api/propostas, use:
 
-    return { success: true, id: result.lastInsertRowid };
-  } catch (error) {
-    console.error('❌ Erro ao inserir proposta:', error);
-    return { success: false, error: error.message };
-  }
-}
 
 // Rotas da API
 app.post('/api/propostas', (req, res) => {
@@ -137,7 +84,7 @@ app.post('/api/propostas', (req, res) => {
       });
     }
 
-    const result = inserirProposta(proposta);
+    const result = database.inserirProposta(proposta);
 
     if (result.success) {
       console.log('✅ Proposta salva com ID:', result.id);

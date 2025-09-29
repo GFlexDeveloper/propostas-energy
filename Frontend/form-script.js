@@ -164,10 +164,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         const economiaMes = (consumo - custoDispKwh - geracao) * valorKwh * (desconto / 100);
                         
                         // Cálculo do valor pago à Flex Energy
-                        const valorPagoFlexMes = Math.max(economiaMes, 0) + (custoDispKwh * valorKwh) + custoIluminacaoPublica;
+                        const valorPagoFlexMes = (consumo*valorKwh) - Math.max(economiaMes, 0) + (custoDispKwh * valorKwh) + custoIluminacaoPublica;
                         
                         // Cálculo do valor pago à CEMIG
-                        const valorPagoCemigMes = consumo * valorKwh;
+                        const valorPagoCemigMes = consumo * valorKwh + custoIluminacaoPublica;
                         
                         // Acumular totais
                         totalEconomia += Math.max(economiaMes, 0); // Não permitir valores negativos
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     economiaMedia = (mediaConsumo - custoDispKwh - geracao) * valorKwh * (desconto / 100);
                     
                     // Cálculo do valor pago à Flex Energy mensal
-                    valorPagoFlexMedia = Math.max(economiaMedia, 0) + (custoDispKwh * valorKwh) + custoIluminacaoPublica;
+                    valorPagoFlexMedia = (mediaConsumo*valorKwh) - Math.max(economiaMedia, 0) + (custoDispKwh * valorKwh) + custoIluminacaoPublica;
                     
                     // Cálculo do valor pago à CEMIG mensal
                     valorPagoCemigMedia = mediaConsumo * valorKwh;
