@@ -46,6 +46,7 @@ db.exec(`
     media_injecao REAL,
     desconto REAL DEFAULT 0,
     tipo_tensao TEXT NOT NULL,
+    classe TEXT NOT NULL,
     valor_kwh REAL DEFAULT 1.19,
     economia_media REAL DEFAULT 0,
     economia_anual REAL DEFAULT 0,
@@ -70,11 +71,12 @@ app.post('/api/propostas', (req, res) => {
       nome: proposta.nome,
       cpfCnpj: proposta.cpfCnpj,
       tipoConsumo: proposta.tipoConsumo,
-      tipoTensao: proposta.tipoTensao
+      tipoTensao: proposta.tipoTensao,
+      classe: proposta.classe
     });
 
     // Validação
-    const required = ['nome', 'cpfCnpj', 'endereco', 'numeroInstalacao', 'contato', 'tipoTensao', 'tipoPadrao', 'geracaoPropria'];
+    const required = ['nome', 'cpfCnpj', 'endereco', 'numeroInstalacao', 'contato', 'tipoTensao', 'tipoPadrao', 'geracaoPropria','classe'];
     const missing = required.filter(field => !proposta[field]);
     
     if (missing.length > 0) {
@@ -211,6 +213,31 @@ process.on('SIGINT', () => {
   db.close();
   console.log('🔚 Conexão com o banco fechada.');
   process.exit(0);
+});
+
+app.get('/api/propostas/instalacao/:numeroInstalacao', (req, res) => {
+  try {
+    const { numeroInstalacao } = req.params;
+    const stmt = db.prepare('SELECT * FROM propostas WHERE numero_instalacao = ?');
+    const proposta = stmt.get(numeroInstalacao);
+
+    if (proposta) {
+      res.json({
+        success: true,
+        data: proposta // ← todos os campos da instalação
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Instalação não encontrada'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao buscar instalação'
+    });
+  }
 });
 
 app.listen(PORT, () => {
