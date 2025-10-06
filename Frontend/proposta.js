@@ -6,7 +6,7 @@ function getNumeroInstalacao() {
 
 // Função para buscar os dados da instalação no backend
 function buscarProposta(numeroInstalacao) {
-  fetch(`/api/propostas/instalacao/${numeroInstalacao}`)
+  fetch(`https://propostas-energy.onrender.com/api/propostas/instalacao/${numeroInstalacao}`)
     .then(response => {
       if (!response.ok) throw new Error('Instalação não encontrada');
       return response.json();

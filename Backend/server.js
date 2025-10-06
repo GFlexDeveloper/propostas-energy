@@ -213,7 +213,7 @@ app.get('/api/estatisticas', (req, res) => {
   }
 });
 
-app.get('/api/health', (req, res) => {
+app.get('z/api/health', (req, res) => {
   try {
     const stmt = db.prepare('SELECT COUNT(*) as total FROM propostas');
     const row = stmt.get();

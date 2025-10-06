@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch('/api/propostas', {
+                const response = await fetch('https://propostas-energy.onrender.com/api/propostas', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)

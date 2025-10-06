@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const formData = new FormData();
             formData.append('pdfFile', pdfFile);
-            const resp = await fetch('/api/upload-pdf', { method: 'POST', body: formData });
+            const resp = await fetch('https://propostas-energy.onrender.com/api/upload-pdf', { method: 'POST', body: formData });
             const result = await resp.json();
             if (result.success) {
                 preencherFormulario(result.data);
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 Object.assign(data, calcularEconomia(data));
 
-                const resp = await fetch('/api/propostas', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+                const resp = await fetch('https://propostas-energy.onrender.com/api/propostas', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
                 const result = await resp.json();
 
                 if (result.success) {
