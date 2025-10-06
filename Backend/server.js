@@ -64,16 +64,16 @@ app.post('/api/upload-pdf', upload.single('pdfFile'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'Nenhum PDF enviado' });
 
-    const pdfBuffer = req.file.buffer;
-    const textoBruto = await extrairTextoBruto(pdfBuffer);
-    const dadosExtraidos = await extrairCamposComLLM(textoBruto);
+    const textoBruto = await extrairTextoBruto(req.file.buffer);
+    const dados = await extrairCamposComLLM(textoBruto);
 
-    res.json({ success: true, data: dadosExtraidos });
+    res.json({ success: true, data: dados });
   } catch (error) {
     console.error('Erro no upload PDF:', error);
-    res.status(500).json({ success: false, message: 'Erro ao processar PDF' });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
+
 
 
 
