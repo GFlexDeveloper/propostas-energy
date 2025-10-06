@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLEX ENERGY - Proposta via PDF</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="form-style.css">
+</head>
+<body class="loading">
+    <header class="logo-container">
+        <div class="logo-icon">
+            <svg><!-- Seu SVG do logo aqui, como no index --></svg>
+        </div>
+        <h1 class="logo-text">FLEX ENERGY</h1>
+        <p class="logo-subtitle">Geração de Proposta via PDF</p>
+    </header>
+
+    <div class="container">
+        <div class="form-section" id="uploadSection">
+            <h2 class="section-title">Upload de PDF da Fatura</h2>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="pdfFile">Selecione o PDF da Fatura *</label>
+                    <input type="file" id="pdfFile" accept=".pdf" required>
+                </div>
+                <button type="submit" class="btn btn-enviar">Processar PDF e Preencher Formulário</button>
+            </form>
+        </div>
+
+        <form id="proposalFormPdf" style="display: none;">
+            <div class="form-section">
+                <h2 class="section-title">Dados Pessoais</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome">Nome Completo / Razão Social *</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cpfCnpj">CPF/CNPJ *</label>
+                        <input type="text" id="cpfCnpj" name="cpfCnpj" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="contato">Telefone para Contato *</label>
+                        <input type="tel" id="contato" name="contato" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="classe">Classe *</label>
+                        <select id="classe" name="classe" required>
+                            <option value="">Selecione...</option>
+                            <option value="Residencial">Residencial</option>
+                            <option value="Comercial">Comercial</option>
+                            <option value="Industrial">Industrial</option>
+                            <option value="Rural">Rural</option>
+                            <option value="Poder Público">Poder Público</option>
+                            <option value="Serviço Público">Serviço Público</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoTensao">Tipo de Tensão *</label>
+                        <select id="tipoTensao" name="tipoTensao" required>
+                            <option value="">Selecione...</option>
+                            <option value="baixa">Baixa Tensão</option>
+                            <option value="media">Média Tensão</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Endereço Completo</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rua">Rua *</label>
+                        <input type="text" id="rua" name="rua" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="numero">Número *</label>
+                        <input type="text" id="numero" name="numero" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="complemento">Complemento</label>
+                        <input type="text" id="complemento" name="complemento">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bairro">Bairro *</label>
+                        <input type="text" id="bairro" name="bairro" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cidade">Cidade *</label>
+                        <input type="text" id="cidade" name="cidade" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="estado">Estado *</label>
+                        <select id="estado" name="estado" required>
+                            <option value="">Selecione...</option>
+                            <option value="Acre">Acre</option>
+                            <option value="Alagoas">Alagoas</option>
+                            <option value="Amapá">Amapá</option>
+                            <option value="Amazonas">Amazonas</option>
+                            <option value="Bahia">Bahia</option>
+                            <option value="Ceará">Ceará</option>
+                            <option value="Distrito Federal">Distrito Federal</option>
+                            <option value="Espírito Santo">Espírito Santo</option>
+                            <option value="Goiás">Goiás</option>
+                            <option value="Maranhão">Maranhão</option>
+                            <option value="Mato Grosso">Mato Grosso</option>
+                            <option value="Mato Grosso do Sul">Mato Grosso do Sul</option>
+                            <option value="Minas Gerais">Minas Gerais</option>
+                            <option value="Pará">Pará</option>
+                            <option value="Paraíba">Paraíba</option>
+                            <option value="Paraná">Paraná</option>
+                            <option value="Pernambuco">Pernambuco</option>
+                            <option value="Piauí">Piauí</option>
+                            <option value="Rio de Janeiro">Rio de Janeiro</option>
+                            <option value="Rio Grande do Norte">Rio Grande do Norte</option>
+                            <option value="Rio Grande do Sul">Rio Grande do Sul</option>
+                            <option value="Rondônia">Rondônia</option>
+                            <option value="Roraima">Roraima</option>
+                            <option value="Santa Catarina">Santa Catarina</option>
+                            <option value="São Paulo">São Paulo</option>
+                            <option value="Sergipe">Sergipe</option>
+                            <option value="Tocantins">Tocantins</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cep">CEP *</label>
+                        <input type="text" id="cep" name="cep" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Dados da Instalação</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="numeroInstalacao">Número de Instalação *</label>
+                        <input type="text" id="numeroInstalacao" name="numeroInstalacao" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="distribuidora">Distribuidora</label>
+                        <input type="text" id="distribuidora" name="distribuidora" value="CEMIG">
+                    </div>
+                </div>
+            </div>
+
+            <div id="secaoBaixaTensao" class="form-section hidden">
+                <h2 class="section-title">Informações de Consumo - Baixa Tensão</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipoConsumo">Tipo de Preenchimento</label>
+                        <select id="tipoConsumo" name="tipoConsumo">
+                            <option value="mensal">Valor de Consumo por Mês</option>
+                            <option value="media">Média de Consumo</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="consumoMensal" class="consumption-grid">
+                    <div class="consumption-item">
+                        <label for="janeiro">Janeiro</label>
+                        <input type="number" id="janeiro" name="janeiro">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="fevereiro">Fevereiro</label>
+                        <input type="number" id="fevereiro" name="fevereiro">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="marco">Março</label>
+                        <input type="number" id="marco" name="marco">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="abril">Abril</label>
+                        <input type="number" id="abril" name="abril">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="maio">Maio</label>
+                        <input type="number" id="maio" name="maio">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="junho">Junho</label>
+                        <input type="number" id="junho" name="junho">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="julho">Julho</label>
+                        <input type="number" id="julho" name="julho">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="agosto">Agosto</label>
+                        <input type="number" id="agosto" name="agosto">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="setembro">Setembro</label>
+                        <input type="number" id="setembro" name="setembro">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="outubro">Outubro</label>
+                        <input type="number" id="outubro" name="outubro">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="novembro">Novembro</label>
+                        <input type="number" id="novembro" name="novembro">
+                    </div>
+                    <div class="consumption-item">
+                        <label for="dezembro">Dezembro</label>
+                        <input type="number" id="dezembro" name="dezembro">
+                    </div>
+                </div>
+                <div id="consumoMedia" class="form-group hidden">
+                    <label for="mediaConsumo">Média de Consumo (kWh/mês)</label>
+                    <input type="number" id="mediaConsumo" name="mediaConsumo">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Configurações Técnicas - Baixa Tensão</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipoPadrao">Tipo de Padrão</label>
+                        <select id="tipoPadrao" name="tipoPadrao">
+                            <option value="">Selecione...</option>
+                            <option value="Monofásico">Monofásico</option>
+                            <option value="Bifásico">Bifásico</option>
+                            <option value="Trifásico">Trifásico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="geracaoPropria">Possui Geração Própria?</label>
+                        <select id="geracaoPropria" name="geracaoPropria">
+                            <option value="">Selecione...</option>
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="injecaoMedia" class="form-group hidden">
+                    <label for="mediaInjecao">Média de Injeção (kWh/mês)</label>
+                    <input type="number" id="mediaInjecao" name="mediaInjecao">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="desconto">Valor de Desconto (%)</label>
+                        <input type="number" id="desconto" name="desconto" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="valorKwh">Valor do kWh (R$)</label>
+                        <input type="number" id="valorKwh" name="valorKwh" step="0.01" value="1.19">
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons-container">
+                <button type="button" id="btnVoltarPdf" class="btn btn-voltar">Voltar para Upload</button>
+                <button type="submit" class="btn btn-enviar">Enviar Proposta</button>
+            </div>
+        </form>
+    </div>
+
+    <footer>
+        © 2025 Flex Energy - Todos os direitos reservados
+    </footer>
+
+    <script src="pdf-script.js"></script>
+</body>
+</html>

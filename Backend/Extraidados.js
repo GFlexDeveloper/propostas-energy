@@ -85,9 +85,6 @@ async function analisarFaturaCemig(pdfBuffer) {
     console.error('Erro ao analisar PDF:', error);
     throw new Error('Falha na análise do PDF');
   }
-}   
+}
 
-// Exemplo de uso:
-const fs = require('fs');
-const buffer = fs.readFileSync("C:/Users/Caique/OneDrive/Desktop/DE 02-25.pdf");
-analisarFaturaCemig(buffer).then(dados => console.log('Dados extraídos:', JSON.stringify(dados, null, 2)));
+module.exports = { analisarFaturaCemig };

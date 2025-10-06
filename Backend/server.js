@@ -1,23 +1,23 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const Database = require('better-sqlite3'); // ← better-sqlite3, não sqlite3
+const Database = require('better-sqlite3');
 const path = require('path');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
+const { analisarFaturaCemig } = require('./Extraidados');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('../frontend'));
 
-// Configuração do Banco de Dados com Better-SQLite3
 const dbPath = path.resolve(__dirname, 'propostas.db');
 const db = new Database(dbPath);
 
-// Criar tabela (sintaxe do better-sqlite3)
 db.exec(`
   CREATE TABLE IF NOT EXISTS propostas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,13 +56,48 @@ db.exec(`
 
 console.log('✅ Tabela propostas criada/verificada com better-sqlite3');
 
-
 const database = require('./database');
 
-// Na rota POST /api/propostas, use:
+app.post('/api/upload-pdf', upload.single('pdfFile'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Nenhum PDF enviado' });
+    }
 
+    const pdfBuffer = req.file.buffer;
+    const dadosExtraidos = await analisarFaturaCemig(pdfBuffer);
 
-// Rotas da API
+    const mappedData = {
+      rua: dadosExtraidos.endereco.rua || '',
+      numero: dadosExtraidos.endereco.numero || '',
+      bairro: dadosExtraidos.endereco.bairro || '',
+      cidade: dadosExtraidos.endereco.cidade || '',
+      estado: dadosExtraidos.endereco.estado || '',
+      cep: dadosExtraidos.endereco.cep || '',
+      mediaConsumo: dadosExtraidos.mediaConsumo || 0,
+      mediaInjecao: dadosExtraidos.mediaInjecao || 0,
+      valorKwh: dadosExtraidos.valorKwh || 1.19,
+      janeiro: dadosExtraidos.historicoConsumo[11]?.consumoKwh || null,
+      fevereiro: dadosExtraidos.historicoConsumo[10]?.consumoKwh || null,
+      marco: dadosExtraidos.historicoConsumo[9]?.consumoKwh || null,
+      abril: dadosExtraidos.historicoConsumo[8]?.consumoKwh || null,
+      maio: dadosExtraidos.historicoConsumo[7]?.consumoKwh || null,
+      junho: dadosExtraidos.historicoConsumo[6]?.consumoKwh || null,
+      julho: dadosExtraidos.historicoConsumo[5]?.consumoKwh || null,
+      agosto: dadosExtraidos.historicoConsumo[4]?.consumoKwh || null,
+      setembro: dadosExtraidos.historicoConsumo[3]?.consumoKwh || null,
+      outubro: dadosExtraidos.historicoConsumo[2]?.consumoKwh || null,
+      novembro: dadosExtraidos.historicoConsumo[1]?.consumoKwh || null,
+      dezembro: dadosExtraidos.historicoConsumo[0]?.consumoKwh || null
+    };
+
+    res.json({ success: true, data: mappedData });
+  } catch (error) {
+    console.error('Erro no upload PDF:', error);
+    res.status(500).json({ success: false, message: 'Erro ao processar PDF' });
+  }
+});
+
 app.post('/api/propostas', (req, res) => {
   try {
     const proposta = req.body;
@@ -75,7 +110,6 @@ app.post('/api/propostas', (req, res) => {
       classe: proposta.classe
     });
 
-    // Validação
     const required = ['nome', 'cpfCnpj', 'endereco', 'numeroInstalacao', 'contato', 'tipoTensao', 'tipoPadrao', 'geracaoPropria','classe'];
     const missing = required.filter(field => !proposta[field]);
     
@@ -112,42 +146,59 @@ app.post('/api/propostas', (req, res) => {
   }
 });
 
-// Rota para listar propostas (atualizada para better-sqlite3)
 app.get('/api/propostas', (req, res) => {
   try {
     const stmt = db.prepare('SELECT * FROM propostas ORDER BY data_criacao DESC');
-    const rows = stmt.all();
-    
+    const propostas = stmt.all();
     res.json({
       success: true,
-      data: rows,
-      total: rows.length
+      data: propostas
     });
   } catch (error) {
-    console.error('Erro ao buscar propostas:', error);
+    console.error('Erro ao listar propostas:', error);
     res.status(500).json({
       success: false,
-      message: 'Erro ao buscar propostas'
+      message: 'Erro ao listar propostas'
     });
   }
 });
 
-// Rota para estatísticas (atualizada para better-sqlite3)
+app.get('/api/propostas/instalacao/:numeroInstalacao', (req, res) => {
+  try {
+    const { numeroInstalacao } = req.params;
+    const stmt = db.prepare('SELECT * FROM propostas WHERE numero_instalacao = ?');
+    const proposta = stmt.get(numeroInstalacao);
+
+    if (proposta) {
+      res.json({
+        success: true,
+        data: proposta
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Instalação não encontrada'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao buscar instalação'
+    });
+  }
+});
+
 app.get('/api/estatisticas', (req, res) => {
   try {
-    // Total de propostas
     const totalStmt = db.prepare('SELECT COUNT(*) as total FROM propostas');
     const totalRow = totalStmt.get();
 
-    // Por tipo de padrão
     const tipoStmt = db.prepare('SELECT tipo_padrao, COUNT(*) as count FROM propostas GROUP BY tipo_padrao');
     const tipoRows = tipoStmt.all();
 
-    // Por geração própria
     const geracaoStmt = db.prepare('SELECT geracao_propria, COUNT(*) as count FROM propostas GROUP BY geracao_propria');
     const geracaoRows = geracaoStmt.all();
 
-    // Por tipo de tensão
     const tensaoStmt = db.prepare('SELECT tipo_tensao, COUNT(*) as count FROM propostas GROUP BY tipo_tensao');
     const tensaoRows = tensaoStmt.all();
 
@@ -183,7 +234,6 @@ app.get('/api/estatisticas', (req, res) => {
   }
 });
 
-// Rota de saúde do servidor
 app.get('/api/health', (req, res) => {
   try {
     const stmt = db.prepare('SELECT COUNT(*) as total FROM propostas');
@@ -208,43 +258,12 @@ app.get('/api/health', (req, res) => {
   }
 });
 
-// Fechar conexão ao encerrar
 process.on('SIGINT', () => {
   db.close();
   console.log('🔚 Conexão com o banco fechada.');
   process.exit(0);
 });
 
-app.get('/api/propostas/instalacao/:numeroInstalacao', (req, res) => {
-  try {
-    const { numeroInstalacao } = req.params;
-    const stmt = db.prepare('SELECT * FROM propostas WHERE numero_instalacao = ?');
-    const proposta = stmt.get(numeroInstalacao);
-
-    if (proposta) {
-      res.json({
-        success: true,
-        data: proposta // ← todos os campos da instalação
-      });
-    } else {
-      res.status(404).json({
-        success: false,
-        message: 'Instalação não encontrada'
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Erro ao buscar instalação'
-    });
-  }
-});
-
 app.listen(PORT, () => {
-  console.log('🚀 SERVIDOR COM BETTER-SQLITE3');
-  console.log(`📊 Porta: ${PORT}`);
-  console.log(`💾 Banco: ${dbPath}`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
-  console.log(`❤️  Health: http://localhost:${PORT}/api/health`);
-  console.log(`📈 Estatísticas: http://localhost:${PORT}/api/estatisticas`);
+  console.log('SERVIDOR INICIADO');
 });
