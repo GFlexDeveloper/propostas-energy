@@ -58,45 +58,24 @@ console.log('✅ Tabela propostas criada/verificada com better-sqlite3');
 
 const database = require('./database');
 
+const { extrairTextoBruto, extrairCamposComLLM } = require('./Extraidados');
+
 app.post('/api/upload-pdf', upload.single('pdfFile'), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: 'Nenhum PDF enviado' });
-    }
+    if (!req.file) return res.status(400).json({ success: false, message: 'Nenhum PDF enviado' });
 
     const pdfBuffer = req.file.buffer;
-    const dadosExtraidos = await analisarFaturaCemig(pdfBuffer);
+    const textoBruto = await extrairTextoBruto(pdfBuffer);
+    const dadosExtraidos = await extrairCamposComLLM(textoBruto);
 
-    const mappedData = {
-      rua: dadosExtraidos.endereco.rua || '',
-      numero: dadosExtraidos.endereco.numero || '',
-      bairro: dadosExtraidos.endereco.bairro || '',
-      cidade: dadosExtraidos.endereco.cidade || '',
-      estado: dadosExtraidos.endereco.estado || '',
-      cep: dadosExtraidos.endereco.cep || '',
-      mediaConsumo: dadosExtraidos.mediaConsumo || 0,
-      mediaInjecao: dadosExtraidos.mediaInjecao || 0,
-      valorKwh: dadosExtraidos.valorKwh || 1.19,
-      janeiro: dadosExtraidos.historicoConsumo[11]?.consumoKwh || null,
-      fevereiro: dadosExtraidos.historicoConsumo[10]?.consumoKwh || null,
-      marco: dadosExtraidos.historicoConsumo[9]?.consumoKwh || null,
-      abril: dadosExtraidos.historicoConsumo[8]?.consumoKwh || null,
-      maio: dadosExtraidos.historicoConsumo[7]?.consumoKwh || null,
-      junho: dadosExtraidos.historicoConsumo[6]?.consumoKwh || null,
-      julho: dadosExtraidos.historicoConsumo[5]?.consumoKwh || null,
-      agosto: dadosExtraidos.historicoConsumo[4]?.consumoKwh || null,
-      setembro: dadosExtraidos.historicoConsumo[3]?.consumoKwh || null,
-      outubro: dadosExtraidos.historicoConsumo[2]?.consumoKwh || null,
-      novembro: dadosExtraidos.historicoConsumo[1]?.consumoKwh || null,
-      dezembro: dadosExtraidos.historicoConsumo[0]?.consumoKwh || null
-    };
-
-    res.json({ success: true, data: mappedData });
+    res.json({ success: true, data: dadosExtraidos });
   } catch (error) {
     console.error('Erro no upload PDF:', error);
     res.status(500).json({ success: false, message: 'Erro ao processar PDF' });
   }
 });
+
+
 
 app.post('/api/propostas', (req, res) => {
   try {
