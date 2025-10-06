@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Assistance - Plataforma de Propostas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-orange: #FF7A00;
+            --light-orange: #FFA347;
+            --dark-orange: #E55D00;
+            --light-gray: #F5F5F5;
+            --medium-gray: #CCCCCC;
+            --dark-gray: #2D2D2D;
+            --card-bg: rgba(255, 255, 255, 0.7);
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--light-gray), #E8E8E8);
+            color: var(--dark-gray);
+            min-height: 100vh;
+            padding-bottom: 120px;
+        }
+        
+        /* Header Hero */
+        .hero {
+            height: 70vh;
+            background: linear-gradient(rgba(255, 122, 0, 0.8), rgba(229, 93, 0, 0.9)), 
+                        url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .main-title {
+            font-size: 5.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, var(--light-gray), var(--light-orange));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.1;
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 700px;
+            margin-bottom: 30px;
+            color: var(--light-gray);
+        }
+        
+        .cta-button {
+            background: var(--light-gray);
+            color: var(--dark-orange);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 122, 0, 0.4);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 122, 0, 0.6);
+            background: var(--primary-orange);
+            color: var(--light-gray);
+        }
+        
+        /* Seções de Conteúdo */
+        .section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            background: linear-gradient(to right, var(--dark-orange), var(--primary-orange));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* Cards de Destaque */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid var(--medium-gray);
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(255, 122, 0, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+            color: var(--primary-orange);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: var(--dark-gray);
+        }
+        
+        .feature-card p {
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+        
+        /* Seção de Estatísticas */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 122, 0, 0.15);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--dark-orange), var(--primary-orange));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 15px 0;
+        }
+        
+        /* Menu Inferior Fixo - BOTÕES MAIORES E MAIS ESTILOSOS */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-top: 2px solid var(--primary-orange);
+            padding: 20px 0;
+            z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 122, 0, 0.05);
+            border: 2px solid transparent;
+            color: var(--dark-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 18px 15px;
+            border-radius: 15px;
+            width: 140px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-btn:hover, .nav-btn.active {
+            color: var(--primary-orange);
+            background: rgba(255, 122, 0, 0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(255, 122, 0, 0.2);
+            border-color: var(--primary-orange);
+        }
+        
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 122, 0, 0.2), transparent);
+            transition: left 0.6s;
+        }
+        
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+        
+        .nav-btn i {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .nav-btn span {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        /* Seções ocultas inicialmente */
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        /* Formulários */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid var(--medium-gray);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-orange);
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--medium-gray);
+            background: white;
+            color: var(--dark-gray);
+            font-size: 16px;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            background: var(--dark-orange);
+            transform: translateY(-3px);
+        }
+        
+        /* Tabela de propostas */
+        .Propostas-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .Propostas-table th, .Propostas-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .Propostas-table th {
+            background: rgba(255, 122, 0, 0.1);
+            color: var(--primary-orange);
+        }
+        
+        .Propostas-table tr:hover {
+            background: rgba(255, 122, 0, 0.05);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 3.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-container {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-btn {
+                width: 45%;
+                margin: 5px;
+                padding: 15px 10px;
+            }
+            
+            .nav-btn i {
+                font-size: 26px;
+            }
+            
+            .nav-btn span {
+                font-size: 14px;
+            }
+        }
+        
+        /* Animações de entrada */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 class="main-title">FLEX ASSISTANCE</h1>
+        <p>Sua plataforma completa para geração e gestão de propostas comerciais</p>
+        <button class="cta-button">ACESSAR PLATAFORMA</button>
+    </section>
+    
+    <!-- Seção Início (ativa por padrão) -->
+    <section id="inicio" class="section content-section active">
+        <h2 class="section-title">Bem-vindo à Flex Assistance</h2>
+        <div class="features">
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fas fa-file-contract"></i></div>
+                <h3>Propostas Personalizadas</h3>
+                <p>Crie propostas comerciais detalhadas e personalizadas para cada cliente em minutos.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Setor Energético</h3>
+                <p>Gere propostas específicas para o setor de energia com cálculos automatizados.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h3>Análise de Dados</h3>
+                <p>Acompanhe o desempenho das suas propostas com relatórios detalhados.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Seção Gerar Proposta Assistance -->
+    <section id="Proposta-assistance" class="section content-section">
+        <h2 class="section-title">Gerar Proposta Assistance</h2>
+        <div class="form-container fade-in">
+            <form id="assistance-form">
+                <div class="form-group">
+                    <label for="client-name">Nome do Cliente</label>
+                    <input type="text" id="client-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="assistance-type">Tipo de Assistência</label>
+                    <select id="assistance-type" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="tecnica">Assistência Técnica</option>
+                        <option value="consultoria">Consultoria Especializada</option>
+                        <option value="suporte">Suporte Continuado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="assistance-desc">Descrição dos Serviços</label>
+                    <textarea id="assistance-desc" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="assistance-value">Valor Proposto (R$)</label>
+                    <input type="number" id="assistance-value" required>
+                </div>
+                <button type="submit" class="submit-btn">GERAR PROPOSTA</button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Seção Gerar Proposta Solar -->
+    <section id="Proposta-Solar" class="section content-section">
+        <h2 class="section-title">Gerar Proposta Solar</h2>
+        <div class="form-container fade-in">
+            <form id="Solar-form">
+                <div class="form-group">
+                    <label for="Solar-client">Cliente</label>
+                    <input type="text" id="Solar-client" required>
+                </div>
+                <div class="form-group">
+                    <label for="Solar-type">Tipo de Energia</label>
+                    <select id="Solar-type" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="solar">Energia Solar</option>
+                        <option value="eolica">Energia Eólica</option>
+                        <option value="biomassa">Biomassa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="Solar-capacity">Capacidade (kW)</label>
+                    <input type="number" id="Solar-capacity" required>
+                </div>
+                <div class="form-group">
+                    <label for="Solar-location">Localização do Projeto</label>
+                    <input type="text" id="Solar-location" required>
+                </div>
+                <div class="form-group">
+                    <label for="Solar-details">Detalhes do Projeto</label>
+                    <textarea id="Solar-details" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">GERAR PROPOSTA</button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Seção Visualizar Propostas -->
+    <section id="view-Propostas" class="section content-section">
+        <h2 class="section-title">Visualizar Propostas</h2>
+        <div class="fade-in">
+            <table class="Propostas-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Tipo</th>
+                        <th>Valor (R$)</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>PR-2024-001</td>
+                        <td>Empresa ABC Ltda</td>
+                        <td>Assistance</td>
+                        <td>25.000,00</td>
+                        <td><span style="color: var(--primary-orange);">Aprovada</span></td>
+                        <td><button class="submit-btn" style="padding: 8px 15px; font-size: 0.9rem;">Ver Detalhes</button></td>
+                    </tr>
+                    <tr>
+                        <td>PR-2024-002</td>
+                        <td>Comércio XYZ</td>
+                        <td>Solar</td>
+                        <td>48.500,00</td>
+                        <td><span style="color: #FFA347;">Pendente</span></td>
+                        <td><button class="submit-btn" style="padding: 8px 15px; font-size: 0.9rem;">Ver Detalhes</button></td>
+                    </tr>
+                    <tr>
+                        <td>PR-2024-003</td>
+                        <td>Indústria QRS</td>
+                        <td>Assistance</td>
+                        <td>32.750,00</td>
+                        <td><span style="color: #E55D00;">Em Análise</span></td>
+                        <td><button class="submit-btn" style="padding: 8px 15px; font-size: 0.9rem;">Ver Detalhes</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    
+    <!-- Seção Cadastrar Clientes -->
+    <section id="register-clients" class="section content-section">
+        <h2 class="section-title">Cadastrar Clientes</h2>
+        <div class="form-container fade-in">
+            <form id="client-form">
+                <div class="form-group">
+                    <label for="client-name">Nome/Razão Social</label>
+                    <input type="text" id="client-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-email">E-mail</label>
+                    <input type="email" id="client-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-phone">Telefone</label>
+                    <input type="tel" id="client-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-document">CNPJ/CPF</label>
+                    <input type="text" id="client-document" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-address">Endereço</label>
+                    <input type="text" id="client-address" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-segment">Segmento</label>
+                    <select id="client-segment" required>
+                        <option value="">Selecione o segmento</option>
+                        <option value="industria">Indústria</option>
+                        <option value="comercio">Comércio</option>
+                        <option value="servicos">Serviços</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">CADASTRAR CLIENTE</button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Menu Inferior com Botões Aprimorados -->
+    <nav class="bottom-nav">
+        <div class="nav-container">
+            <button class="nav-btn active" data-target="inicio">
+                <i class="fas fa-home"></i>
+                <span>Início</span>
+            </button>
+            <button class="nav-btn" data-target="Proposta-assistance">
+                <i class="fas fa-file-contract"></i>
+                <span>Proposta Assistance</span>
+            </button>
+            <button class="nav-btn" data-target="Proposta-Solar">
+                <i class="fas fa-bolt"></i>
+                <span>Proposta Solar</span>
+            </button>
+            <button class="nav-btn" data-target="view-Propostas">
+                <i class="fas fa-eye"></i>
+                <span>Visualizar Propostas</span>
+            </button>
+            <button class="nav-btn" data-target="register-clients">
+                <i class="fas fa-user-plus"></i>
+                <span>Cadastrar Clientes</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Navegação entre seções
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.content-section');
+            
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    
+                    // Atualizar botões ativos
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Mostrar seção correspondente
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            
+                            // Adicionar animação aos elementos da seção
+                            const elements = section.querySelectorAll('.feature-card, .stat-card, .form-container, .Propostas-table');
+                            elements.forEach((el, index) => {
+                                el.classList.remove('fade-in');
+                                setTimeout(() => {
+                                    el.classList.add('fade-in');
+                                }, index * 200);
+                            });
+                        }
+                    });
+                    
+                    // Rolagem suave para o topo da seção
+                    document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+            
+            // Simular envio de formulários
+            document.getElementById('assistance-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Proposta Assistance gerada com sucesso!');
+                this.reset();
+            });
+            
+            document.getElementById('Solar-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Proposta Solar gerada com sucesso!');
+                this.reset();
+            });
+            
+            document.getElementById('client-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Cliente cadastrado com sucesso!');
+                this.reset();
+            });
+            
+            // Animar elementos na primeira carga
+            setTimeout(() => {
+                const initialElements = document.querySelectorAll('.feature-card, .stat-card');
+                initialElements.forEach((el, index) => {
+                    setTimeout(() => {
+                        el.classList.add('fade-in');
+                    }, index * 200);
+                });
+            }, 500);
+        });
+    </script>
+</body>
+</html>
