@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obrigado!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1A1A24;
+            color: #E0E0E0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #1A1A24;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #33333C;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-image {
+            height: 28px; /* Altura do seu logo */
+            width: auto;
+        }
+
+        .back-to-panel {
+            display: flex;
+            align-items: center;
+            color: #E0E0E0;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: color 0.3s ease;
+        }
+
+        .back-to-panel svg {
+            margin-right: 8px;
+            color: #E0E0E0;
+        }
+
+        .back-to-panel:hover, .back-to-panel:hover svg {
+            color: #FFC107;
+        }
+
+        .container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #2D2D38;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+
+        .thank-you-card {
+            text-align: center;
+        }
+
+        .check-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 20px;
+        }
+
+        .thank-you-card h2 {
+            color: #FFC107;
+            font-size: 2em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .thank-you-card p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #CCCCCC;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: #FFC107;
+            color: #1A1A24;
+        }
+
+        .btn-primary:hover {
+            background-color: #E6B000;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="Midia/logo-icon.png" alt="Logo da Empresa" class="logo-image">
+        </div>
+        <a href="index.html" class="back-to-panel">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.6667 7.33333H3.40008L7.80008 2.93333L6.66675 1.8L0.666748 7.8L6.66675 13.8L7.80008 12.6667L3.40008 8.26667H14.6667V7.33333Z" fill="currentColor"/>
+            </svg>
+            Voltar ao Painel
+        </a>
+    </header>
+
+    <main class="container">
+        <div class="card thank-you-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="check-icon">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10.5 17.5L5 12L6.41 10.59L10.5 14.67L17.59 7.59L19 9L10.5 17.5Z" fill="#FFC107"/>
+            </svg>
+            <h2>Obrigado!</h2>
+            <p>Sua proposta foi enviada com sucesso!</p>
+            <p>Seja Bem-Vindo á Flex Energy</p>
+            <a href="index.html" class="btn btn-primary">Voltar ao Painel</a>
+        </div>
+    </main>
+</body>
+</html>
