@@ -1,17 +1,112 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Proposta Dinâmica</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 2em; }
-    #proposta { background: #f3f3f3; padding: 1em; border-radius: 8px; max-width: 500px; }
-    .erro { color: red; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Energy - Proposta Comercial</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="proposta-style.css">
 </head>
 <body>
-  <h1>Proposta Flex Energy</h1>
-  <div id="proposta">Carregando...</div>
-  <script src="proposta.js"></script>
+    <div id="loading">Carregando dados da proposta...</div>
+
+    <div id="proposal-content" class="proposal-container hidden">
+        <div class="header">
+            <div class="top-bar">
+                <div class="logo-info">
+                    <img src="../Midia/Logoenergy.png" alt="Logo Flex Energy" class="proposal-logo">
+                </div>
+                <div class="proposal-meta">
+                    <strong>Proposta Nº:</strong> <span id="proposta-id"></span><br>
+                    <strong>Data de Emissão:</strong> <span id="proposta-data"></span>
+                </div>
+            </div>
+            <hr class="divider"/>
+            <div class="client-details">
+                <strong>CLIENTE:</strong> <span id="cliente-nome"></span><br/>
+                <strong>CPF/CNPJ:</strong> <span id="cliente-documento"></span><br/>
+                <strong>ENDEREÇO:</strong> <span id="cliente-endereco"></span><br/>
+                <strong>Nº DE INSTALAÇÃO:</strong> <span id="cliente-instalacao"></span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="main-banner">Estimativa de Economia com Energia Compartilhada</div>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-file-invoice-dollar"></i><h3>Fatura Média Atual</h3></div>
+                    <div class="card-body"><p class="main-value" id="fatura-cemig"></p></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-bolt"></i><h3>Consumo Médio</h3></div>
+                    <div class="card-body"><p class="main-value"><span id="consumo-medio"></span><span class="suffix">kWh/mês</span></p></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-percent"></i><h3>Desconto Aplicado</h3></div>
+                    <div class="card-body"><p class="main-value" id="desconto"></p></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-receipt"></i><h3>Nova Fatura Média</h3></div>
+                    <div class="card-body"><p class="main-value" id="fatura-flex"></p></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-piggy-bank"></i><h3>Economia Mensal</h3></div>
+                    <div class="card-body"><p class="main-value highlight-green" id="economia-mensal"></p></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-calendar-check"></i><h3>Economia Anual</h3></div>
+                    <div class="card-body"><p class="main-value highlight-green" id="economia-anual"></p></div>
+                </div>
+            </div>
+
+            <div class="simulation-section">
+                <h2 class="section-title">Sua Simulação de Economia</h2>
+                <table class="simulation-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Valor Médio Mensal</th>
+                            <th>Valor Anual (Estimado)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Valor pago para a Concessionária (hoje)</td>
+                            <td id="tabela-cemig-mensal"></td>
+                            <td id="tabela-cemig-anual"></td>
+                        </tr>
+                        <tr>
+                            <td>Valor a ser pago com a Flex Energy</td>
+                            <td id="tabela-flex-mensal"></td>
+                            <td id="tabela-flex-anual"></td>
+                        </tr>
+                        <tr class="total-savings-row">
+                            <td>Sua economia total</td>
+                            <td id="tabela-economia-mensal"></td>
+                            <td id="tabela-economia-anual"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script src="proposta.js"></script>
+<div class="action-buttons-footer">
+        <a href="index.html" class="btn-action btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar ao Painel
+        </a>
+        <a href="#" class="btn-action btn-primary">
+            Começar a Economizar <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
 </body>
 </html>

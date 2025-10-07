@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLEX ENERGY - Propostas Geradas</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="geradas-style.css">
+</head>
+<body>
+    <header class="page-header">
+        <div class="logo-container">
+            <img src="../Midia/logo-icon.png" alt="Logo Flex Energy" class="header-logo">
+            <h1 class="page-title">Propostas Geradas</h1>
+        </div>
+        <a href="index.html" class="back-to-home">
+            <i class="fas fa-arrow-left"></i>
+            <span>Voltar ao Painel</span>
+        </a>
+    </header>
+
+    <main class="main-container">
+        <div id="proposals-table-container">
+            <table class="proposals-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Documento</th>
+                        <th>Data</th>
+                        <th>Classe</th>
+                    </tr>
+                </thead>
+                <tbody id="proposals-table-body">
+                    </tbody>
+            </table>
+            <div id="table-status"></div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        &copy; 2025 Flex Energy - Todos os direitos reservados
+    </footer>
+
+    <script src="geradas-script.js"></script>
+</body>
+</html>

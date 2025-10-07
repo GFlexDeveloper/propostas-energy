@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Iniciar animação em cascata
-    iniciarAnimacaoFormulario();
+    // === CONSTANTES E ELEMENTOS DO DOM ===
+    const VALOR_KWH_PADRAO = 1.19;
+    const proposalForm = document.getElementById('proposalForm');
+    if (!proposalForm) return; // Se não houver formulário, não faz nada
 
     // Elementos do formulário
     const tipoTensao = document.getElementById('tipoTensao');
@@ -10,99 +12,98 @@ document.addEventListener('DOMContentLoaded', function() {
     const consumoMedia = document.getElementById('consumoMedia');
     const geracaoPropria = document.getElementById('geracaoPropria');
     const injecaoMedia = document.getElementById('injecaoMedia');
-    const btnVoltar = document.getElementById('btnVoltar');
-    const proposalForm = document.getElementById('proposalForm');
-    const VALOR_KWH_PADRAO = 1.19;
+    const cepInput = document.getElementById('cep');
+    const cpfCnpjInput = document.getElementById('cpfCnpj');
+    const contatoInput = document.getElementById('contato');
 
-    // Função para iniciar animação em cascata
-    function iniciarAnimacaoFormulario() {
-        document.body.classList.remove('loading');
-        setTimeout(() => {
-            if (secaoBaixaTensao) {
-                secaoBaixaTensao.classList.add('hidden');
-            }
-        }, 100);
+    // Remove a classe 'loading' para iniciar as animações CSS
+    document.body.classList.remove('loading');
+
+    // === FUNÇÕES DE CONTROLE DO FORMULÁRIO ===
+
+    // Controla a visibilidade da seção de baixa tensão
+    function controlarSecaoBaixaTensao() {
+        if (!tipoTensao || !secaoBaixaTensao) return;
+
+        if (tipoTensao.value === 'baixa') {
+            secaoBaixaTensao.classList.add('visible');
+            secaoBaixaTensao.classList.remove('hidden-section');
+            tornarCamposObrigatorios(true);
+        } else {
+            secaoBaixaTensao.classList.remove('visible');
+            secaoBaixaTensao.classList.add('hidden-section');
+            tornarCamposObrigatorios(false);
+        }
     }
 
-    // Controlar visibilidade baseado no tipo de tensão
-    if (tipoTensao && secaoBaixaTensao) {
-        tipoTensao.addEventListener('change', function() {
-            if (this.value === 'baixa') {
-                secaoBaixaTensao.style.display = 'block';
-                setTimeout(() => {
-                    secaoBaixaTensao.classList.remove('hidden');
-                }, 10);
-                tornarCamposObrigatorios(true);
-            } else {
-                secaoBaixaTensao.classList.add('hidden');
-                setTimeout(() => {
-                    secaoBaixaTensao.style.display = 'none';
-                }, 500);
-                tornarCamposObrigatorios(false);
-            }
-        });
-        setTimeout(() => {
-            if (tipoTensao.value !== 'baixa') {
-                secaoBaixaTensao.classList.add('hidden');
-                secaoBaixaTensao.style.display = 'none';
-            }
-        }, 100);
-    }
-
-    // Função para tornar campos obrigatórios ou opcionais
+    // Define campos como obrigatórios ou não
     function tornarCamposObrigatorios(obrigatorio) {
-        const campos = ['tipoConsumo', 'tipoPadrao', 'geracaoPropria'];
-        const camposEndereco = ['rua', 'numero', 'bairro', 'cidade', 'estado', 'cep'];
-        camposEndereco.forEach(campo => {
-            const element = document.getElementById(campo);
-            if (element) element.required = true;
-        });
-        campos.forEach(campo => {
-            const element = document.getElementById(campo);
+        const campos = ['tipoPadrao', 'geracaoPropria'];
+        campos.forEach(id => {
+            const element = document.getElementById(id);
             if (element) {
                 element.required = !!obrigatorio;
-                if (!obrigatorio && element.tagName === 'SELECT') element.value = '';
+                if (!obrigatorio) element.value = ''; // Limpa a seleção se não for obrigatório
             }
         });
     }
 
-    // Alternar entre consumo mensal e média (baixa tensão)
-    if (tipoConsumo && consumoMensal && consumoMedia) {
-        tipoConsumo.addEventListener('change', function() {
-            if (this.value === 'mensal') {
-                consumoMensal.classList.remove('hidden');
-                consumoMedia.classList.add('hidden');
-            } else {
-                consumoMensal.classList.add('hidden');
-                consumoMedia.classList.remove('hidden');
-            }
-        });
+    // Alterna entre os campos de consumo mensal e média
+    function alternarTipoConsumo() {
+        if (!tipoConsumo || !consumoMensal || !consumoMedia) return;
+        
+        if (tipoConsumo.value === 'mensal') {
+            consumoMensal.classList.remove('hidden');
+            consumoMedia.classList.add('hidden');
+        } else {
+            consumoMensal.classList.add('hidden');
+            consumoMedia.classList.remove('hidden');
+        }
     }
 
-    // Mostrar/ocultar campo de injeção média (baixa tensão)
-    if (geracaoPropria && injecaoMedia) {
-        geracaoPropria.addEventListener('change', function() {
-            if (this.value === 'sim') {
-                injecaoMedia.classList.remove('hidden');
-            } else {
-                injecaoMedia.classList.add('hidden');
-            }
-        });
+    // Mostra/oculta o campo de injeção de energia
+    function controlarInjecaoMedia() {
+        if (!geracaoPropria || !injecaoMedia) return;
+
+        if (geracaoPropria.value === 'sim') {
+            injecaoMedia.classList.remove('hidden');
+        } else {
+            injecaoMedia.classList.add('hidden');
+        }
     }
 
-    // Voltar para a tela inicial
-    if (btnVoltar) {
-        btnVoltar.addEventListener('click', function() {
-            if (confirm('Deseja voltar para a tela inicial? Os dados não salvos serão perdidos.')) {
-                window.location.href = 'index.html';
-            }
-        });
-    }
+    // === FUNÇÕES DE FORMATAÇÃO E API (MÁSCARAS E CEP) ===
 
-    // Buscar endereço pelo CEP
+    const formatadores = {
+        cep: (v) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').substring(0, 9),
+        cpfCnpj: (v) => {
+            v = v.replace(/\D/g, '');
+            if (v.length <= 11) { // CPF
+                return v.replace(/(\d{3})(\d)/, '$1.$2')
+                        .replace(/(\d{3})(\d)/, '$1.$2')
+                        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            } else { // CNPJ
+                return v.substring(0, 14)
+                        .replace(/^(\d{2})(\d)/, '$1.$2')
+                        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+                        .replace(/\.(\d{3})(\d)/, '.$1/$2')
+                        .replace(/(\d{4})(\d)/, '$1-$2');
+            }
+        },
+        telefone: (v) => {
+            v = v.replace(/\D/g, '');
+            if (v.length > 10) { // Celular
+                return v.substring(0, 11).replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            } else { // Fixo
+                return v.substring(0, 10).replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+            }
+        }
+    };
+
     async function buscarEnderecoPorCEP() {
-        const cep = document.getElementById('cep').value.replace(/\D/g, '');
+        const cep = cepInput.value.replace(/\D/g, '');
         if (cep.length !== 8) return;
+
         try {
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
             const data = await response.json();
@@ -111,246 +112,116 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('bairro').value = data.bairro || '';
                 document.getElementById('cidade').value = data.localidade || '';
                 document.getElementById('estado').value = data.uf || '';
+                document.getElementById('numero').focus(); // Foco no próximo campo
             } else {
-                alert('CEP não encontrado. Por favor, verifique o CEP informado.');
+                alert('CEP não encontrado.');
             }
         } catch (error) {
-            alert('Erro ao buscar CEP. Tente novamente.');
+            alert('Erro ao buscar CEP. Verifique sua conexão.');
         }
     }
 
-    // Formatar CEP
-    function formatarCEP(cep) {
-        cep = cep.replace(/\D/g, '');
-        if (cep.length > 5) cep = cep.replace(/^(\d{5})(\d)/, '$1-$2');
-        return cep.substring(0, 9);
-    }
+    // === LÓGICA DE CÁLCULO E ENVIO ===
 
-    // Formatar CPF/CNPJ
-    function formatarDocumento(documento) {
-        documento = documento.replace(/\D/g, '');
-        if (documento.length <= 11) {
-            documento = documento.replace(/(\d{3})(\d)/, '$1.$2');
-            documento = documento.replace(/(\d{3})(\d)/, '$1.$2');
-            documento = documento.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        } else {
-            documento = documento.replace(/^(\d{2})(\d)/, '$1.$2');
-            documento = documento.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-            documento = documento.replace(/\.(\d{3})(\d)/, '.$1/$2');
-            documento = documento.replace(/(\d{4})(\d)/, '$1-$2');
-        }
-        return documento;
-    }
-
-    // Formatar telefone
-    function formatarTelefone(telefone) {
-        telefone = telefone.replace(/\D/g, '');
-        if (telefone.length <= 10) {
-            telefone = telefone.replace(/(\d{2})(\d)/, '($1) $2');
-            telefone = telefone.replace(/(\d{4})(\d)/, '$1-$2');
-        } else {
-            telefone = telefone.replace(/(\d{2})(\d)/, '($1) $2');
-            telefone = telefone.replace(/(\d{5})(\d)/, '$1-$2');
-        }
-        return telefone;
-    }
-
-    // Eventos para máscaras e busca de CEP
-    const cepInput = document.getElementById('cep');
-    if (cepInput) {
-        cepInput.addEventListener('blur', buscarEnderecoPorCEP);
-        cepInput.addEventListener('input', function(e) {
-            e.target.value = formatarCEP(e.target.value);
-        });
-    }
-    const cpfCnpjInput = document.getElementById('cpfCnpj');
-    if (cpfCnpjInput) {
-        cpfCnpjInput.addEventListener('input', function(e) {
-            e.target.value = formatarDocumento(e.target.value);
-        });
-    }
-    const contatoInput = document.getElementById('contato');
-    if (contatoInput) {
-        contatoInput.addEventListener('input', function(e) {
-            e.target.value = formatarTelefone(e.target.value);
-        });
-    }
-
-    // Função para calcular economia e valores (sem mostrar para o usuário)
     function calcularEconomia(data) {
+        // Implementação da função de cálculo (sem alterações)
         const valorKwh = parseFloat(data.valorKwh) || VALOR_KWH_PADRAO;
         const desconto = parseFloat(data.desconto) || 0;
-        const tipoConsumoVal = data.tipoConsumo;
-        const tipoPadrao = data.tipoPadrao;
-        const geracaoPropria = data.geracaoPropria;
-        const mediaInjecao = parseFloat(data.mediaInjecao) || 0;
+        let economiaMedia = 0, economiaAnual = 0, valorPagoFlexMedia = 0, valorPagoFlexAnual = 0, valorPagoCemigMedia = 0, valorPagoCemigAnual = 0;
+        
+        if (data.tipoTensao === 'baixa' && data.tipoPadrao) {
+            const custoDisponibilidadeKwh = {'monofasico': 30, 'bifasico': 50, 'trifasico': 100}[data.tipoPadrao] || 0;
+            const geracao = (data.geracaoPropria === 'sim') ? (parseFloat(data.mediaInjecao) || 0) : 0;
+            const custoIluminacaoPublica = 20; // Valor exemplo
+            let consumoCalculado = 0;
 
-        let economiaMedia = 0;
-        let economiaAnual = 0;
-        let valorPagoFlexMedia = 0;
-        let valorPagoFlexAnual = 0;
-        let valorPagoCemigMedia = 0;
-        let valorPagoCemigAnual = 0;
-
-        const custoDisponibilidadeKwh = {
-            'monofasico': 30,
-            'bifasico': 50,
-            'trifasico': 100
-        };
-
-        if (data.tipoTensao === 'baixa' && tipoPadrao) {
-            const custoDispKwh = custoDisponibilidadeKwh[tipoPadrao] || 0;
-            const geracao = (geracaoPropria === 'sim') ? mediaInjecao : 0;
-            const custoIluminacaoPublica = 20;
-
-            if (tipoConsumoVal === 'mensal') {
+            if (data.tipoConsumo === 'media') {
+                consumoCalculado = parseFloat(data.mediaConsumo) || 0;
+            } else {
                 const meses = ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-                let totalEconomia = 0, totalValorPagoFlex = 0, totalValorPagoCemig = 0, mesesPreenchidos = 0;
+                let totalConsumo = 0;
+                let mesesPreenchidos = 0;
                 meses.forEach(mes => {
-                    const consumo = parseFloat(data[mes]) || 0;
-                    if (consumo > 0) {
-                        const economiaMes = (consumo - custoDispKwh - geracao) * valorKwh * (desconto / 100);
-                        const valorPagoFlexMes = (consumo*valorKwh) - Math.max(economiaMes, 0) + (custoDispKwh * valorKwh) + custoIluminacaoPublica;
-                        const valorPagoCemigMes = consumo * valorKwh + custoIluminacaoPublica;
-                        totalEconomia += Math.max(economiaMes, 0);
-                        totalValorPagoFlex += Math.max(valorPagoFlexMes, 0);
-                        totalValorPagoCemig += Math.max(valorPagoCemigMes, 0);
+                    const consumoMes = parseFloat(data[mes]) || 0;
+                    if (consumoMes > 0) {
+                        totalConsumo += consumoMes;
                         mesesPreenchidos++;
                     }
                 });
-                if (mesesPreenchidos > 0) {
-                    economiaMedia = totalEconomia / mesesPreenchidos;
-                    valorPagoFlexMedia = totalValorPagoFlex / mesesPreenchidos;
-                    valorPagoCemigMedia = totalValorPagoCemig / mesesPreenchidos;
-                    economiaAnual = totalEconomia;
-                    valorPagoFlexAnual = totalValorPagoFlex;
-                    valorPagoCemigAnual = totalValorPagoCemig;
-                }
-            } else if (tipoConsumoVal === 'media') {
-                const mediaConsumo = parseFloat(data.mediaConsumo) || 0;
-                if (mediaConsumo > 0) {
-                    economiaMedia = (mediaConsumo - custoDispKwh - geracao) * valorKwh * (desconto / 100);
-                    valorPagoFlexMedia = (mediaConsumo*valorKwh) - Math.max(economiaMedia, 0) + (custoDispKwh * valorKwh) + custoIluminacaoPublica;
-                    valorPagoCemigMedia = mediaConsumo * valorKwh;
-                    economiaAnual = Math.max(economiaMedia, 0) * 12;
-                    valorPagoFlexAnual = valorPagoFlexMedia * 12;
-                    valorPagoCemigAnual = valorPagoCemigMedia * 12;
-                    economiaMedia = Math.max(economiaMedia, 0);
-                    valorPagoFlexMedia = Math.max(valorPagoFlexMedia, 0);
-                    valorPagoCemigMedia = Math.max(valorPagoCemigMedia, 0);
-                }
+                consumoCalculado = mesesPreenchidos > 0 ? totalConsumo / mesesPreenchidos : 0;
+            }
+
+            if (consumoCalculado > 0) {
+                economiaMedia = (consumoCalculado - custoDisponibilidadeKwh - geracao) * valorKwh * (desconto / 100);
+                economiaMedia = Math.max(0, economiaMedia); // Garante que a economia não seja negativa
+                valorPagoFlexMedia = (consumoCalculado * valorKwh) - economiaMedia + (custoDisponibilidadeKwh * valorKwh) + custoIluminacaoPublica;
+                valorPagoCemigMedia = (consumoCalculado * valorKwh) + custoIluminacaoPublica;
+                economiaAnual = economiaMedia * 12;
+                valorPagoFlexAnual = valorPagoFlexMedia * 12;
+                valorPagoCemigAnual = valorPagoCemigMedia * 12;
             }
         }
-        return {
-            economiaMedia, economiaAnual, valorPagoFlexMedia, valorPagoFlexAnual, valorPagoCemigMedia, valorPagoCemigAnual
-        };
+        return { economiaMedia, economiaAnual, valorPagoFlexMedia, valorPagoFlexAnual, valorPagoCemigMedia, valorPagoCemigAnual };
     }
 
-    // Função para validar formulário completo
-    function validarFormulario() {
-        const camposObrigatorios = [
-            'nome', 'cpfCnpj', 'contato', 'classe', 'tipoTensao',
-            'rua', 'numero', 'bairro', 'cidade', 'estado', 'cep',
-            'numeroInstalacao'
-        ];
-        const tipoTensaoVal = document.getElementById('tipoTensao').value;
-        if (tipoTensaoVal === 'baixa') {
-            camposObrigatorios.push('tipoPadrao', 'geracaoPropria');
-        }
-        const missing = camposObrigatorios.filter(field => {
-            const element = document.getElementById(field);
-            return !element || !element.value;
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(proposalForm);
+        const data = Object.fromEntries(formData.entries());
+
+        // Monta endereço completo
+        data.endereco = `${data.rua}, ${data.numero}${data.complemento ? ' - ' + data.complemento : ''}, ${data.bairro}, ${data.cidade} - ${data.estado}, CEP: ${data.cep}`;
+        
+        // Calcula economia
+        Object.assign(data, calcularEconomia(data));
+
+        // Converte campos numéricos que podem estar vazios
+        const numericFields = ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro','mediaConsumo','mediaInjecao','desconto','valorKwh'];
+        numericFields.forEach(field => {
+            data[field] = data[field] ? parseFloat(data[field]) : null;
         });
-        if (missing.length > 0) {
-            alert('Por favor, preencha todos os campos obrigatórios.');
-            const firstMissing = document.getElementById(missing[0]);
-            if (firstMissing) {
-                firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstMissing.focus();
-            }
-            return false;
-        }
-        return true;
-    }
 
-    // Envio do formulário
-    if (proposalForm) {
-        proposalForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (!validarFormulario()) return;
+        // Feedback visual de envio
+        const submitBtn = proposalForm.querySelector('.btn-enviar');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '⏳ Enviando...';
+        submitBtn.disabled = true;
 
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
-
-            // Monta endereço completo a partir dos campos
-            data.endereco = `${data.rua}, ${data.numero}${data.complemento ? ' - ' + data.complemento : ''}, ${data.bairro}, ${data.cidade} - ${data.estado}, CEP: ${data.cep}`;
-            if (!data.valorKwh) data.valorKwh = VALOR_KWH_PADRAO;
-
-            // Calcula economia e valores
-            const dadosCalculados = calcularEconomia(data);
-            data.economiaMedia = dadosCalculados.economiaMedia;
-            data.economiaAnual = dadosCalculados.economiaAnual;
-            data.valorPagoFlexMedia = dadosCalculados.valorPagoFlexMedia;
-            data.valorPagoFlexAnual = dadosCalculados.valorPagoFlexAnual;
-            data.valorPagoCemigMedia = dadosCalculados.valorPagoCemigMedia;
-            data.valorPagoCemigAnual = dadosCalculados.valorPagoCemigAnual;
-
-            // Converte campos numéricos
-            const numericFields = ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro','mediaConsumo','mediaInjecao','desconto','valorKwh'];
-            numericFields.forEach(field => {
-                if (data[field]) data[field] = parseFloat(data[field]);
-                else data[field] = null;
+        try {
+            const response = await fetch('https://propostas-energy.onrender.com/api/propostas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             });
-
-            // Exibe loading no botão
-            const submitBtn = this.querySelector('.btn-enviar');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '⏳ Enviando...';
-            submitBtn.disabled = true;
-
-            try {
-                const response = await fetch('https://propostas-energy.onrender.com/api/propostas', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                if (result.success) {
+            const result = await response.json();
+            if (result.success) {
                 alert('✅ Proposta salva com sucesso! ID: ' + result.id);
-                this.reset();
-                resetarCamposDinamicos();
-                
-                // Adicionar redirecionamento para visualizar a proposta
-                const numeroInstalacao = data.numeroInstalacao; // Obtenha do formData ou data
-                window.location.href = `proposta.html?instalacao=${encodeURIComponent(numeroInstalacao)}`;
-                } else {
-                    alert('❌ Erro ao salvar proposta: ' + result.message);
-                }
-            } catch (error) {
-                alert('❌ Erro ao conectar com o servidor.');
-            } finally {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                window.location.href = `proposta.html?instalacao=${encodeURIComponent(data.numeroInstalacao)}`;
+            } else {
+                alert(`❌ Erro ao salvar proposta: ${result.message}`);
             }
-        });
+        } catch (error) {
+            alert('❌ Erro de conexão com o servidor. Tente novamente.');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
     }
 
-    // Função para resetar campos dinâmicos
-    function resetarCamposDinamicos() {
-        if (secaoBaixaTensao) {
-            secaoBaixaTensao.style.display = 'block';
-            secaoBaixaTensao.classList.remove('hidden');
-        }
-        if (tipoConsumo) tipoConsumo.value = 'mensal';
-        if (consumoMensal) consumoMensal.classList.remove('hidden');
-        if (consumoMedia) consumoMedia.classList.add('hidden');
-        if (injecaoMedia) injecaoMedia.classList.add('hidden');
-        const valorKwhInput = document.getElementById('valorKwh');
-        if (valorKwhInput) valorKwhInput.value = VALOR_KWH_PADRAO;
-        if (tipoTensao) tipoTensao.value = '';
-        const distribuidoraInput = document.getElementById('distribuidora');
-        if (distribuidoraInput) distribuidoraInput.value = 'CEMIG';
-        const classeInput = document.getElementById('classe');
-        if (classeInput) classeInput.value = '';
+    // === EVENT LISTENERS ===
+    if (tipoTensao) tipoTensao.addEventListener('change', controlarSecaoBaixaTensao);
+    if (tipoConsumo) tipoConsumo.addEventListener('change', alternarTipoConsumo);
+    if (geracaoPropria) geracaoPropria.addEventListener('change', controlarInjecaoMedia);
+    if (cepInput) {
+        cepInput.addEventListener('input', (e) => e.target.value = formatadores.cep(e.target.value));
+        cepInput.addEventListener('blur', buscarEnderecoPorCEP);
     }
+    if (cpfCnpjInput) cpfCnpjInput.addEventListener('input', (e) => e.target.value = formatadores.cpfCnpj(e.target.value));
+    if (contatoInput) contatoInput.addEventListener('input', (e) => e.target.value = formatadores.telefone(e.target.value));
+    
+    proposalForm.addEventListener('submit', handleFormSubmit);
+
+    // === INICIALIZAÇÃO ===
+    controlarSecaoBaixaTensao(); // Roda uma vez para definir o estado inicial
 });

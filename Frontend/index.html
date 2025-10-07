@@ -3,39 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flex Energy - Sistema de Propostas</title>
+    <title>Flex Energy - Painel de Controle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="logo-container">
-        <div class="logo-icon">
-            <svg viewBox="0 0 24 24">
-                <path d="M13 3v10h8V3h-8zM3 21h8v-6H3v6zM3 11h8V3H3v8z"/>
-            </svg>
+    <header class="hero-section">
+        <div class="logo-container">
+            <div class="logo-icon">
+                <img src="../Midia/logo-icon.png" alt="Logo Flex Energy">
+            </div>
+            <div>
+                <h1 class="hero-title">FLEX ENERGY</h1>
+                <p class="hero-subtitle">Plataforma de Gestão de Propostas</p>
+            </div>
         </div>
-        <h1 class="logo-text">FLEX ENERGY</h1>
-        <p class="logo-subtitle">Sistema de Geração de Propostas</p>
-    </div>
+    </header>
 
-    <div class="buttons-container">
-        <button class="btn btn-manual">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="white">
-                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-            </svg>
-            Gerar Proposta Manual
-        </button>
-        
-        <button class="btn btn-pdf">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="white">
-                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-            </svg>
-            Gerar Proposta via PDF
-        </button>
-    </div>
+    <main class="main-container">
+        <div class="actions-grid">
+            
+            <div class="action-card" id="card-manual">
+                <div class="card-icon"><i class="fas fa-file-signature"></i></div>
+                <h3 class="card-title">Gerar Proposta Manual</h3>
+                <p class="card-description">Crie uma nova proposta preenchendo todos os campos detalhadamente.</p>
+            </div>
 
-    <div class="footer">
+            <div class="action-card" id="card-pdf">
+                <div class="card-icon"><i class="fas fa-file-upload"></i></div>
+                <h3 class="card-title">Gerar Proposta via PDF</h3>
+                <p class="card-description">Faça o upload de uma fatura e deixe a IA extrair as informações para você.</p>
+            </div>
+
+            <div class="action-card" id="card-geradas">
+                <div class="card-icon"><i class="fas fa-folder-open"></i></div>
+                <h3 class="card-title">Propostas Geradas</h3>
+                <p class="card-description">Visualize, edite e gerencie todas as propostas salvas no sistema.</p>
+            </div>
+
+            <div class="action-card" id="card-info">
+                <div class="card-icon"><i class="fas fa-info-circle"></i></div>
+                <h3 class="card-title">Sobre o Projeto</h3>
+                <p class="card-description">Conheça as tecnologias e funcionalidades desta plataforma.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer">
         &copy; 2025 Flex Energy - Todos os direitos reservados
-    </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
