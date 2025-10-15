@@ -1,35 +1,31 @@
-// Função para extrair o parâmetro "instalacao" da URL
+// Frontend/proposta.js
+
+FlexAuth.init(); // Protege a página
+
 function getNumeroInstalacao() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('instalacao');
+    return new URLSearchParams(window.location.search).get('instalacao');
 }
 
-// Função para formatar valores como moeda (R$)
 function formatarMoeda(valor) {
-    if (typeof valor !== 'number') {
-        valor = 0;
-    }
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return (Number(valor) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// Função para preencher um elemento do HTML
 function preencherCampo(id, valor, formatador) {
     const elemento = document.getElementById(id);
     if (elemento) {
-        elemento.textContent = formatador ? formatador(valor) : valor;
+        elemento.textContent = formatador ? formatador(valor) : (valor || 'N/A');
     }
 }
 
-// Função principal para buscar e exibir a proposta
 async function buscarEExibirProposta(numeroInstalacao) {
     const loadingDiv = document.getElementById('loading');
     const proposalDiv = document.getElementById('proposal-content');
 
     try {
-        const response = await fetch(`https://propostas-energy.onrender.com/api/propostas/instalacao/${numeroInstalacao}`);
+        const response = await FlexAuth.fetchWithAuth(`/api/propostas/instalacao/${numeroInstalacao}`);
         
         if (!response.ok) {
-            throw new Error('Proposta não encontrada ou erro no servidor.');
+            throw new Error(`Proposta não encontrada (status: ${response.status})`);
         }
 
         const result = await response.json();
@@ -37,7 +33,6 @@ async function buscarEExibirProposta(numeroInstalacao) {
         if (result.success && result.data) {
             const proposta = result.data;
             
-            // Preenche o cabeçalho
             preencherCampo('proposta-id', proposta.id);
             preencherCampo('proposta-data', new Date(proposta.data_criacao).toLocaleDateString('pt-BR'));
             preencherCampo('cliente-nome', proposta.nome);
@@ -45,7 +40,6 @@ async function buscarEExibirProposta(numeroInstalacao) {
             preencherCampo('cliente-endereco', proposta.endereco);
             preencherCampo('cliente-instalacao', proposta.numero_instalacao);
 
-            // Preenche os cards
             preencherCampo('fatura-cemig', proposta.valor_pago_cemig_media, formatarMoeda);
             preencherCampo('consumo-medio', proposta.media_consumo);
             preencherCampo('desconto', `${proposta.desconto || 0}%`);
@@ -53,7 +47,6 @@ async function buscarEExibirProposta(numeroInstalacao) {
             preencherCampo('economia-mensal', proposta.economia_media, formatarMoeda);
             preencherCampo('economia-anual', proposta.economia_anual, formatarMoeda);
             
-            // Preenche a tabela de simulação
             preencherCampo('tabela-cemig-mensal', proposta.valor_pago_cemig_media, formatarMoeda);
             preencherCampo('tabela-cemig-anual', proposta.valor_pago_cemig_anual, formatarMoeda);
             preencherCampo('tabela-flex-mensal', proposta.valor_pago_flex_media, formatarMoeda);
@@ -61,7 +54,6 @@ async function buscarEExibirProposta(numeroInstalacao) {
             preencherCampo('tabela-economia-mensal', proposta.economia_media, formatarMoeda);
             preencherCampo('tabela-economia-anual', proposta.economia_anual, formatarMoeda);
 
-            // Mostra o conteúdo e esconde o "carregando"
             loadingDiv.classList.add('hidden');
             proposalDiv.classList.remove('hidden');
         } else {
@@ -73,13 +65,10 @@ async function buscarEExibirProposta(numeroInstalacao) {
     }
 }
 
-// Inicialização ao carregar a página
 window.onload = function() {
     const numeroInstalacao = getNumeroInstalacao();
     if (!numeroInstalacao) {
-        const loadingDiv = document.getElementById('loading');
-        loadingDiv.textContent = 'Erro: Número de instalação não informado na URL.';
-        loadingDiv.style.color = 'red';
+        document.getElementById('loading').textContent = 'Erro: Número de instalação não informado na URL.';
         return;
     }
     buscarEExibirProposta(numeroInstalacao);

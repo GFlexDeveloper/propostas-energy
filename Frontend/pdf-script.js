@@ -1,3 +1,7 @@
+// Frontend/pdf-script.js
+
+FlexAuth.init(); // Protege a página no início
+
 document.addEventListener('DOMContentLoaded', function() {
     // === CONSTANTES E ELEMENTOS DO DOM ===
     const VALOR_KWH_PADRAO = 1.19;
@@ -10,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnProcessarPdf = document.getElementById('btnProcessarPdf');
     const btnVoltarPdf = document.getElementById('btnVoltarPdf');
 
-    // Elementos do formulário dinâmico
     const tipoTensao = document.getElementById('tipoTensao');
     const secaoBaixaTensao = document.getElementById('secaoBaixaTensao');
     const tipoConsumo = document.getElementById('tipoConsumo');
@@ -25,8 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.classList.remove('loading');
 
     // === LÓGICA DA INTERFACE DE UPLOAD ===
-    
-    if(pdfFileInput && fileNameSpan){
+    if (pdfFileInput && fileNameSpan) {
         pdfFileInput.addEventListener('change', () => {
             if (pdfFileInput.files.length > 0) {
                 fileNameSpan.textContent = pdfFileInput.files[0].name;
@@ -46,12 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
         btnVoltarPdf.addEventListener('click', () => {
             uploadSection.classList.remove('hidden');
             proposalFormPdf.classList.add('hidden');
-            
             uploadForm.reset();
             proposalFormPdf.reset();
             fileNameSpan.textContent = 'Clique para selecionar o arquivo PDF';
             fileNameSpan.style.color = 'var(--text-secondary)';
-            // Garante que a seção de baixa tensão fique oculta ao resetar
             if (secaoBaixaTensao) {
                 secaoBaixaTensao.classList.remove('visible');
                 secaoBaixaTensao.classList.add('hidden-section');
@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // === FUNÇÕES DE CONTROLE E FORMATAÇÃO ===
-
     if (tipoTensao && secaoBaixaTensao) {
         tipoTensao.addEventListener('change', function() {
             const isBaixa = this.value === 'baixa';
@@ -69,23 +68,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    if (tipoConsumo) tipoConsumo.addEventListener('change', () => {
-        consumoMensal.classList.toggle('hidden', tipoConsumo.value !== 'mensal');
-        consumoMedia.classList.toggle('hidden', tipoConsumo.value !== 'media');
-    });
+    if (tipoConsumo) {
+        tipoConsumo.addEventListener('change', () => {
+            consumoMensal.classList.toggle('hidden', tipoConsumo.value !== 'mensal');
+            consumoMedia.classList.toggle('hidden', tipoConsumo.value !== 'media');
+        });
+    }
 
-    if (geracaoPropria) geracaoPropria.addEventListener('change', () => {
-        injecaoMedia.classList.toggle('hidden', geracaoPropria.value !== 'sim');
-    });
+    if (geracaoPropria) {
+        geracaoPropria.addEventListener('change', () => {
+            injecaoMedia.classList.toggle('hidden', geracaoPropria.value !== 'sim');
+        });
+    }
 
     const formatadores = {
-        cep: (v) => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').substring(0, 9),
-        cpfCnpj: (v) => { v = v.replace(/\D/g, ''); if (v.length <= 11) { return v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2'); } else { return v.substring(0, 14).replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2'); } },
-        telefone: (v) => { v = v.replace(/\D/g, ''); if (v.length > 10) { return v.substring(0, 11).replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'); } else { return v.substring(0, 10).replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3'); } }
+        cep: v => v.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').substring(0, 9),
+        cpfCnpj: v => {
+            v = v.replace(/\D/g, '');
+            return v.length <= 11 ?
+                v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2') :
+                v.substring(0, 14).replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2');
+        },
+        telefone: v => {
+            v = v.replace(/\D/g, '');
+            return v.length > 10 ?
+                v.substring(0, 11).replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') :
+                v.substring(0, 10).replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+        }
     };
 
     async function buscarEnderecoPorCEP() {
-        const cep = cepInput.value.replace(/\D/g, '');
+        const cep = (cepInput.value || '').replace(/\D/g, '');
         if (cep.length !== 8) return;
         try {
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
@@ -104,38 +117,31 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cpfCnpjInput) cpfCnpjInput.addEventListener('input', (e) => e.target.value = formatadores.cpfCnpj(e.target.value));
     if (contatoInput) contatoInput.addEventListener('input', (e) => e.target.value = formatadores.telefone(e.target.value));
 
+    // === CÁLCULO DE ECONOMIA ===
     function calcularEconomia(data) {
         const valorKwh = parseFloat(data.valorKwh) || VALOR_KWH_PADRAO;
         const desconto = parseFloat(data.desconto) || 0;
         let economiaMedia = 0, economiaAnual = 0, valorPagoFlexMedia = 0, valorPagoFlexAnual = 0, valorPagoCemigMedia = 0, valorPagoCemigAnual = 0;
-        
         if (data.tipoTensao === 'baixa' && data.tipoPadrao) {
             const custoDisponibilidadeKwh = {'monofasico': 30, 'bifasico': 50, 'trifasico': 100}[data.tipoPadrao] || 0;
             const geracao = (data.geracaoPropria === 'sim') ? (parseFloat(data.mediaInjecao) || 0) : 0;
             const custoIluminacaoPublica = 20;
             let consumoCalculado = 0;
-
             if (data.tipoConsumo === 'media') {
                 consumoCalculado = parseFloat(data.mediaConsumo) || 0;
             } else {
                 const meses = ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-                let totalConsumo = 0;
-                let mesesPreenchidos = 0;
-                meses.forEach(mes => {
+                const { totalConsumo, mesesPreenchidos } = meses.reduce((acc, mes) => {
                     const consumoMes = parseFloat(data[mes]) || 0;
-                    if (consumoMes > 0) {
-                        totalConsumo += consumoMes;
-                        mesesPreenchidos++;
-                    }
-                });
+                    if (consumoMes > 0) { acc.totalConsumo += consumoMes; acc.mesesPreenchidos++; }
+                    return acc;
+                }, { totalConsumo: 0, mesesPreenchidos: 0 });
                 consumoCalculado = mesesPreenchidos > 0 ? totalConsumo / mesesPreenchidos : 0;
             }
-
             if (consumoCalculado > 0) {
-                economiaMedia = (consumoCalculado - custoDisponibilidadeKwh - geracao) * valorKwh * (desconto / 100);
-                economiaMedia = Math.max(0, economiaMedia);
-                valorPagoFlexMedia = (consumoCalculado * valorKwh) - economiaMedia + (custoDisponibilidadeKwh * valorKwh) + custoIluminacaoPublica;
+                economiaMedia = Math.max(0, (consumoCalculado - custoDisponibilidadeKwh - geracao) * valorKwh * (desconto / 100));
                 valorPagoCemigMedia = (consumoCalculado * valorKwh) + custoIluminacaoPublica;
+                valorPagoFlexMedia = valorPagoCemigMedia - economiaMedia + (custoDisponibilidadeKwh * valorKwh);
                 economiaAnual = economiaMedia * 12;
                 valorPagoFlexAnual = valorPagoFlexMedia * 12;
                 valorPagoCemigAnual = valorPagoCemigMedia * 12;
@@ -145,11 +151,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // === PROCESSAMENTO E SUBMISSÃO ===
-    
     async function handleUploadSubmit(e) {
         e.preventDefault();
         const pdfFile = pdfFileInput.files[0];
-        if (!pdfFile) { alert('Por favor, selecione um arquivo PDF.'); return; }
+        if (!pdfFile) {
+            alert('Por favor, selecione um arquivo PDF antes de processar.');
+            return;
+        }
 
         const originalText = btnProcessarPdf.innerHTML;
         btnProcessarPdf.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
@@ -158,20 +166,25 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const formData = new FormData();
             formData.append('pdfFile', pdfFile);
-            const response = await fetch('https://propostas-energy.onrender.com/api/upload-pdf', { method: 'POST', body: formData });
+
+            const response = await FlexAuth.fetchWithAuth('/api/upload-pdf', {
+                method: 'POST',
+                body: formData
+            });
+
             const result = await response.json();
 
             if (result.success && result.data) {
                 uploadSection.classList.add('hidden');
-                preencherFormulario(result.data); 
+                preencherFormulario(result.data);
                 proposalFormPdf.classList.remove('hidden');
                 alert('PDF processado! Verifique e complete os dados antes de enviar.');
             } else {
-                alert(`❌ Erro ao processar PDF: ${result.message}`);
+                throw new Error(result.message || 'Falha ao processar o PDF no servidor.');
             }
         } catch (error) {
-            console.error('Erro no upload:', error);
-            alert('❌ Erro de conexão com o servidor.');
+            console.error("ERRO COMPLETO NO UPLOAD:", error);
+            alert(`❌ Erro ao processar o PDF: ${error.message}.`);
         } finally {
             btnProcessarPdf.innerHTML = originalText;
             btnProcessarPdf.disabled = false;
@@ -184,30 +197,27 @@ document.addEventListener('DOMContentLoaded', function() {
             if (el && val !== undefined && val !== null) el.value = val;
         };
         
-        if (data.valorKwh && data.valorKwh > 0) {
+        if (data.valorKwh > 0) {
             set('tipoTensao', 'baixa');
             if (tipoTensao) tipoTensao.dispatchEvent(new Event('change'));
             set('valorKwh', parseFloat(data.valorKwh).toFixed(4));
         }
-
-        if (data.mediaInjecao && data.mediaInjecao > 0) {
+        if (data.mediaInjecao > 0) {
             set('geracaoPropria', 'sim');
             set('mediaInjecao', data.mediaInjecao);
             if (geracaoPropria) geracaoPropria.dispatchEvent(new Event('change'));
         } else {
             set('geracaoPropria', 'nao');
         }
-
         if (data.endereco) {
             set('rua', data.endereco.rua);
             set('numero', data.endereco.numero);
             set('bairro', data.endereco.bairro);
             set('cidade', data.endereco.cidade);
-            set('estado', data.endereco.estado ? data.endereco.estado.toUpperCase() : '');
+            set('estado', (data.endereco.estado || '').toUpperCase());
             set('cep', data.endereco.cep);
         }
-
-        if (data.mediaConsumo && data.mediaConsumo > 0) {
+        if (data.mediaConsumo > 0) {
             set('tipoConsumo', 'media');
             set('mediaConsumo', data.mediaConsumo);
         } else if (data.historicoConsumo) {
@@ -218,23 +228,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-        
         if (tipoConsumo) tipoConsumo.dispatchEvent(new Event('change'));
     }
 
     if (proposalFormPdf) {
         proposalFormPdf.addEventListener('submit', async function(e){
             e.preventDefault();
-
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
 
             data.endereco = `${data.rua}, ${data.numero}${data.complemento ? ' - ' + data.complemento : ''}, ${data.bairro}, ${data.cidade} - ${data.estado}, CEP: ${data.cep}`;
-            
             Object.assign(data, calcularEconomia(data));
-
-            const numericFields = ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro','mediaConsumo','mediaInjecao','desconto','valorKwh'];
-            numericFields.forEach(field => {
+            ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro','mediaConsumo','mediaInjecao','desconto','valorKwh'].forEach(field => {
                 data[field] = data[field] ? parseFloat(data[field]) : null;
             });
 
@@ -244,9 +249,8 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch('https://propostas-energy.onrender.com/api/propostas', {
+                const response = await FlexAuth.fetchWithAuth('/api/propostas', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 const result = await response.json();
@@ -254,11 +258,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert('✅ Proposta salva com sucesso! ID: ' + result.id);
                     window.location.href = `proposta.html?instalacao=${encodeURIComponent(data.numeroInstalacao)}`;
                 } else {
-                    alert(`❌ Erro ao salvar proposta: ${result.message}`);
+                    throw new Error(result.message);
                 }
             } catch (error) {
-                console.error('Erro no envio:', error);
-                alert('❌ Erro de conexão com o servidor. Tente novamente.');
+                alert(`❌ Erro ao salvar proposta: ${error.message}`);
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
@@ -266,3 +269,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+

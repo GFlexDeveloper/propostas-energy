@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Energy - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="form-style.css">
+    <style>
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+        }
+        .login-container { 
+            max-width: 450px; 
+            width: 100%; 
+            margin-top: -100px;
+        }
+        .login-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+        }
+        .login-logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .login-logo {
+            width: 70px;
+        }
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group input {
+            width: 100%;
+        }
+        .btn-enviar {
+            width: 100%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <main class="login-container">
+        <div class="login-card">
+            <div class="login-logo-container">
+                 <img src="Midia/logo-icon.png" alt="Logo Flex Energy" class="login-logo">
+                 <h1 class="login-title">FLEX ENERGY</h1>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" placeholder="Sua senha" required>
+                </div>
+                <button type="submit" class="btn-enviar">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const btn = this.querySelector('.btn-enviar');
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = 'Entrando...';
+            btn.disabled = true;
+
+            try {
+                // Lembre-se de mudar a URL se o seu backend não estiver rodando localmente
+                const response = await fetch('http://localhost:3000/api/usuarios/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    localStorage.setItem('flex-token', result.token);
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Erro: ' + result.message);
+                }
+            } catch (error) {
+                alert('Erro de conexão. Verifique se o servidor está rodando.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
