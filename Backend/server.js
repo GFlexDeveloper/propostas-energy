@@ -142,7 +142,7 @@ app.post('/api/usuarios/login', (req, res) => {
 
 // --- ROTAS DA APLICAÇÃO (PROTEGIDAS) ---
 
-app.post('/api/upload-pdf', verificarToken, upload.single('pdfFile'), async (req, res) => {
+app.post('/api/upload-pdf',  upload.single('pdfFile'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'Nenhum PDF enviado' });
     const textoBruto = await extrairTextoBruto(req.file.buffer);
@@ -154,7 +154,7 @@ app.post('/api/upload-pdf', verificarToken, upload.single('pdfFile'), async (req
   }
 });
 
-app.post('/api/propostas', verificarToken, (req, res) => {
+app.post('/api/propostas',  (req, res) => {
   try {
     const proposta = req.body;
     const required = ['nome', 'cpfCnpj', 'endereco', 'numeroInstalacao', 'contato', 'tipoTensao', 'tipoPadrao', 'geracaoPropria','classe'];
@@ -178,7 +178,7 @@ app.post('/api/propostas', verificarToken, (req, res) => {
   }
 });
 
-app.get('/api/propostas', verificarToken, (req, res) => {
+app.get('/api/propostas',  (req, res) => {
   try {
     const stmt = db.prepare('SELECT * FROM propostas ORDER BY data_criacao DESC');
     res.json({ success: true, data: stmt.all() });
@@ -188,7 +188,7 @@ app.get('/api/propostas', verificarToken, (req, res) => {
   }
 });
 
-app.get('/api/propostas/instalacao/:numeroInstalacao', verificarToken, (req, res) => {
+app.get('/api/propostas/instalacao/:numeroInstalacao',  (req, res) => {
   try {
     const { numeroInstalacao } = req.params;
     const stmt = db.prepare('SELECT * FROM propostas WHERE numero_instalacao = ?');
@@ -203,7 +203,7 @@ app.get('/api/propostas/instalacao/:numeroInstalacao', verificarToken, (req, res
   }
 });
 
-app.get('/api/estatisticas', verificarToken, (req, res) => {
+app.get('/api/estatisticas',  (req, res) => {
   try {
     const totalRow = db.prepare('SELECT COUNT(*) as total FROM propostas').get();
     const tipoRows = db.prepare('SELECT tipo_padrao, COUNT(*) as count FROM propostas GROUP BY tipo_padrao').all();
