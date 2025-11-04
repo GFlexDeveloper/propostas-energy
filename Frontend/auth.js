@@ -6,7 +6,7 @@ const FlexAuth = {
     // Se estiver rodando no Render, usa a URL do Render. Se não, usa localhost.
     apiBaseUrl: window.location.hostname.includes('onrender.com') 
                   ? `https://${window.location.hostname}` 
-                  : 'http://localhost:3000',
+                  : 'https://propostas-energy.onrender.com',
 
     init: function() {
         this.token = localStorage.getItem('flex-token');
