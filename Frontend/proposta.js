@@ -1,4 +1,4 @@
-// Frontend/proposta.js
+// Frontend/proposta.js (CORRIGIDO)
 
 FlexAuth.init(); // Protege a página
 
@@ -13,6 +13,11 @@ function formatarMoeda(valor) {
 function preencherCampo(id, valor, formatador) {
     const elemento = document.getElementById(id);
     if (elemento) {
+        // Adiciona uma verificação para consumo médio, caso seja 0 ou null
+        if (id === 'consumo-medio' && (!valor || valor == 0)) {
+            elemento.textContent = 'N/A';
+            return;
+        }
         elemento.textContent = formatador ? formatador(valor) : (valor || 'N/A');
     }
 }
@@ -41,7 +46,7 @@ async function buscarEExibirProposta(numeroInstalacao) {
             preencherCampo('cliente-instalacao', proposta.numero_instalacao);
 
             preencherCampo('fatura-cemig', proposta.valor_pago_cemig_media, formatarMoeda);
-            preencherCampo('consumo-medio', proposta.media_consumo);
+            preencherCampo('consumo-medio', proposta.media_consumo); // Agora deve ter o valor correto
             preencherCampo('desconto', `${proposta.desconto || 0}%`);
             preencherCampo('fatura-flex', proposta.valor_pago_flex_media, formatarMoeda);
             preencherCampo('economia-mensal', proposta.economia_media, formatarMoeda);
@@ -65,11 +70,11 @@ async function buscarEExibirProposta(numeroInstalacao) {
     }
 }
 
-window.onload = function() {
-    const numeroInstalacao = getNumeroInstalacao();
-    if (!numeroInstalacao) {
-        document.getElementById('loading').textContent = 'Erro: Número de instalação não informado na URL.';
-        return;
-    }
+// --- CORREÇÃO AQUI ---
+// Removemos o 'window.onload' e chamamos a função de busca diretamente.
+const numeroInstalacao = getNumeroInstalacao();
+if (!numeroInstalacao) {
+    document.getElementById('loading').textContent = 'Erro: Número de instalação não informado na URL.';
+} else {
     buscarEExibirProposta(numeroInstalacao);
-};
+}
