@@ -19,7 +19,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 // MODIFICADO: Configuração de CORS para aceitar seu domínio da HostGator
 const corsOptions = {
   // IMPORTANTE: Troque 'https://www.seu-dominio-hostgator.com' pelo seu domínio real
-  origin: 'https://www.seu-dominio-hostgator.com', 
+  origin: 'https://flexgrupo.com.br', 
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
@@ -228,5 +228,5 @@ app.get('/api/health', async (req, res) => {
 // --- INICIALIZAÇÃO DO SERVIDOR ---
 // MODIFICADO: Process 'SIGINT' removido, o 'pg.Pool' gerencia conexões.
 app.listen(PORT, () => {
-  console.log(`🚀 SERVIDOR INICIADO na porta ${PORT}`);
+  console.log(`SERVIDOR INICIADO na porta ${PORT}`);
 });
