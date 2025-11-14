@@ -1,4 +1,5 @@
 // MODIFICADO: Trocamos 'better-sqlite3' pelo 'pg' (PostgreSQL)
+require('dotenv').config();
 const { Pool } = require('pg');
 
 // MODIFICADO: O Pool usa variáveis de ambiente (LIDAS DO .ENV)

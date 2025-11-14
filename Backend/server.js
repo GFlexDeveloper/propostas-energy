@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -15,11 +16,22 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const upload = multer({ storage: multer.memoryStorage() });
 
 // --- MIDDLEWARE ---
+// MODIFICADO: Configuração de CORS para aceitar produção E localhost
+const whiteList = [
+  'https://flexgrupo.com.br', // Teu site em produção
+  'http://localhost:55805',
+  'http://192.168.1.15:55805'    // O teu servidor 'serve' (MUDA A PORTA SE FOR DIFERENTE)
+];
 
-// MODIFICADO: Configuração de CORS para aceitar seu domínio da HostGator
 const corsOptions = {
-  // IMPORTANTE: Troque 'https://www.seu-dominio-hostgator.com' pelo seu domínio real
-  origin: 'https://flexgrupo.com.br', 
+  origin: function (origin, callback) {
+    // Permite pedidos sem 'origin' (como o Postman) ou da whitelist
+    if (whiteList.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Bloqueado pelo CORS'));
+    }
+  },
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
