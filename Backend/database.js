@@ -1,20 +1,20 @@
 // MODIFICADO: Trocamos 'better-sqlite3' pelo 'pg' (PostgreSQL)
 const { Pool } = require('pg');
 
-// --- INÍCIO DA CORREÇÃO ---
-// MODIFICADO: Determina se o SSL é necessário. 'localhost' não usa SSL.
-const useSsl = process.env.DB_HOST !== 'localhost';
-// --- FIM DA CORREÇÃO ---
-
-// MODIFICADO: O Pool usa variáveis de ambiente que a AWS irá fornecer.
+// MODIFICADO: O Pool usa variáveis de ambiente (LIDAS DO .ENV)
 const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost', // Garante localhost se falhar o env
-  user: process.env.DB_USER || 'caique',     // Garante o user
-  password: '22122002c',                      // <--- SENHA FIXA AQUI (entre aspas)
-  database: process.env.DB_NAME || 'flexdb',
-  port: 5432,
-  ssl: false 
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT || 5432,
+  
+  // --- CORREÇÃO AQUI ---
+  // A base de dados Docker em localhost não usa SSL.
+  // Vamos desativá-lo explicitamente.
+  ssl: false
 });
+
 // MODIFICADO: Função para criar as tabelas se não existirem (sintaxe do PostgreSQL)
 async function initDb() {
   const propostasTable = `
