@@ -2,21 +2,18 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-// MODIFICADO: 'better-sqlite3' removido
 const path = require('path');
 const multer = require('multer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// --- CONFIGURAÇÃO ---
+
 const app = express();
 const PORT = process.env.PORT || 3000;
-// MODIFICADO: Use a variável de ambiente para o JWT_SECRET
 const JWT_SECRET = process.env.JWT_SECRET;
 const upload = multer({ storage: multer.memoryStorage() });
 
-// --- MIDDLEWARE ---
-// MODIFICADO: Configuração de CORS para aceitar produção E localhost
+
 const whiteList = [
   'https://flexgrupo.com.br', // Teu site em produção
   'http://localhost:55805',
@@ -37,13 +34,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// MODIFICADO: Linha removida, o frontend agora está na HostGator
-// app.use(express.static('../frontend'));
 
-// --- BANCO DE DADOS ---
-// MODIFICADO: Importa o novo database.js
+
 const db = require('./database');
-// MODIFICADO: Inicializa o banco de dados (cria tabelas se não existirem)
+
 db.initDb().catch(err => {
   console.error("Falha ao inicializar o DB na inicialização do servidor:", err);
   process.exit(1);
@@ -104,7 +98,6 @@ app.post('/api/usuarios/registrar', async (req, res) => {
     }
 });
 
-// MODIFICADO: Rota agora é ASYNC e usa a função do DB
 app.post('/api/usuarios/login', async (req, res) => {
     try {
         const { email, senha } = req.body;
@@ -136,9 +129,8 @@ app.post('/api/usuarios/login', async (req, res) => {
 });
 
 
-// --- ROTAS DA APLICAÇÃO (PROTEGIDAS) ---
 
-// MODIFICADO: Adicionamos 'verificarToken' para proteger a rota
+
 app.post('/api/upload-pdf', verificarToken, upload.single('pdfFile'), async (req, res) => {
   try {
     if (!process.env.OPENAI_API_KEY) {
@@ -156,11 +148,11 @@ app.post('/api/upload-pdf', verificarToken, upload.single('pdfFile'), async (req
   }
 });
 
-// MODIFICADO: Rota agora é ASYNC e protegida por token
+
 app.post('/api/propostas', verificarToken, async (req, res) => {
   try {
     const proposta = req.body;
-    // MODIFICADO: 'classe' adicionada como obrigatória
+ 
     const required = ['nome', 'cpfCnpj', 'endereco', 'numeroInstalacao', 'contato', 'tipoTensao', 'tipoPadrao', 'geracaoPropria','classe'];
     const missing = required.filter(field => !proposta[field]);
     
