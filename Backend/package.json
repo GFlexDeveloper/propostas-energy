@@ -1,0 +1,31 @@
+{
+  "name": "propostas-energy-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "jest",
+    "test:unit": "jest --runTestsByPath ./src/tests/unit",
+    "test:integration": "jest --runTestsByPath ./src/tests/integration",
+    "lint": "eslint . --ext .js",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.21.2",
+    "jsforce": "^3.5.1",
+    "jsonwebtoken": "^9.0.2",
+    "openai": "^4.0.0",
+    "pg": "^8.11.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "prettier": "^3.2.1"
+  }
+}
