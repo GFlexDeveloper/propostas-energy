@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLEX ENERGY - Sobre o Projeto</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* CSS Corrigido e Embutido */
+        :root {
+            --primary-yellow: #FFB800;
+            --background-dark: #1A202C;
+            --card-background: #2D3748;
+            --border-color: #4A5568;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0AEC0;
+        }
+
+        body {
+            background-color: var(--background-dark);
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            margin-top: 75px; /* Adicionado para não deixar o conteúdo começar embaixo do header fixo */
+        }
+
+        /* --- NAVEGAÇÃO/HEADER CORRIGIDO --- */
+        .page-header {
+            position: fixed; /* Header fixo no topo */
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(26, 32, 44, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            margin: 0;
+            margin-left: 12px;
+        }
+
+        .back-to-home {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s;
+            margin-left: 24px;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .back-to-home:hover {
+            color: var(--primary-yellow);
+        }
+
+        /* --- Seção Hero --- */
+        .hero {
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 20px;
+            background: linear-gradient(135deg, rgba(45, 55, 72, 0.1) 0%, rgba(26, 32, 44, 0.9) 100%), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1740&q=80') no-repeat center center/cover;
+            margin-top: -75px; /* Compensa a margem adicionada no body */
+        }
+
+        .hero-content { max-width: 800px; }
+        .hero h1 { font-size: 4rem; font-weight: 700; margin-bottom: 15px; line-height: 1.2; }
+        .hero .highlight { color: var(--primary-yellow); }
+        .hero p { font-size: 1.3rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
+
+        /* --- Seções de Conteúdo --- */
+        .content-section {
+            padding: 80px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content-section:nth-child(even) { grid-template-columns: 1fr 1fr; }
+        .content-section:nth-child(even) .text-content { order: 2; }
+        .content-section:nth-child(even) .visual-content { order: 1; }
+        .text-content h2 { font-size: 2.5rem; font-weight: 600; margin-bottom: 20px; }
+        .text-content p { font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary); }
+        .visual-content { display: flex; align-items: center; justify-content: center; background: var(--card-background); border-radius: 16px; padding: 40px; }
+        .visual-content i { font-size: 10rem; color: var(--primary-yellow); opacity: 0.8; }
+
+        .features-list { list-style: none; padding: 0; margin-top: 20px; }
+        .features-list li { display: flex; align-items: center; gap: 15px; font-size: 1.1rem; margin-bottom: 15px; }
+        .features-list i { color: #38A169; font-size: 1.3rem; }
+
+        .footer { padding: 20px; text-align: center; color: var(--text-secondary); border-top: 1px solid var(--border-color); margin-top: 40px; }
+        
+        /* --- Responsividade --- */
+        @media (max-width: 900px) {
+            .content-section, .content-section:nth-child(even) { grid-template-columns: 1fr; }
+            .content-section:nth-child(even) .text-content { order: 1; }
+            .content-section:nth-child(even) .visual-content { order: 2; }
+            .hero h1 { font-size: 3rem; }
+            .text-content h2 { font-size: 2rem; }
+        }
+
+        /* --- Animações --- */
+        .hidden-anim { opacity: 0; transition: opacity 1s ease-out, transform 1s ease-out; }
+        .from-left { transform: translateX(-50px); }
+        .from-right { transform: translateX(50px); }
+        .from-bottom { transform: translateY(50px); }
+        .is-visible { opacity: 1; transform: none; }
+    </style>
+</head>
+<body>
+    
+    <header class="page-header">
+        <div class="logo-container">
+            <img src="Midia/logo-icon.png" alt="Logo Flex Energy" class="header-logo">
+            <h1 class="page-title">Propostas Energy</h1>
+            <a href="index.html" class="back-to-home">
+                <i class="fas fa-arrow-left"></i>
+                <span>Voltar ao Painel</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content hidden-anim from-bottom">
+                <h1>A <span class="highlight">Revolução</span> na Geração de Propostas de Energia.</h1>
+                <p>Uma ferramenta web estratégica, projetada para dominar o mercado através de agilidade, autonomia e eficiência sem precedentes para nossa força de vendas.</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="text-content hidden-anim from-left">
+                <h2>A Solução Definitiva para o Mercado de Energia</h2>
+                <p>
+                    O Propostas Energy é uma plataforma SaaS (Software as a Service) disruptiva, meticulosamente projetada para atacar a maior e mais custosa ineficiência do setor de vendas de energia: a morosidade e a complexidade burocrática na geração de propostas. Em um mercado que demanda velocidade, nós entregamos o futuro, capacitando nossa força de vendas com uma ferramenta poderosa e ubíqua, que transforma qualquer dispositivo conectado em uma central de negócios de alto desempenho.
+                </p>
+            </div>
+            <div class="visual-content hidden-anim from-right">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="text-content hidden-anim from-right">
+                <h2>Tecnologia e Eficiência na Prática</h2>
+                <p>
+                    Nossa plataforma otimiza todo o ciclo de venda, desde o contato inicial até a conversão, através de um workflow de automação inteligente projetado para maximizar a produtividade. Reduzimos a curva de aprendizado e o tempo de negociação, permitindo que nossos vendedores se concentrem em construir relacionamentos, não em preencher papelada.
+                </p>
+                 <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> <strong>Propostas Instantâneas:</strong> Geração automática de orçamentos profissionais, com cálculos precisos de economia, em múltiplos formatos (PDF, link compartilhável).</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>Inteligência de Dados:</strong> Extração de informações-chave de faturas em PDF via IA, eliminando erros manuais e acelerando a análise.</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>Ciclo de Venda End-to-End:</strong> Nosso roadmap claro inclui a implementação de assinaturas digitais e onboarding automático, criando um pipeline de vendas 100% digital e sem atritos.</li>
+                </ul>
+            </div>
+            <div class="visual-content hidden-anim from-left">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="text-content hidden-anim from-left">
+                <h2>Nossa Visão: Escalabilidade e Liderança de Mercado</h2>
+                <p>
+                    O objetivo do Propostas Energy transcende a automação de tarefas. Nossa visão é construir o ecossistema de vendas mais eficiente e escalável do setor de energia. Ao equipar nossos vendedores com total autonomia e uma ferramenta de ponta, estamos não apenas otimizando processos, mas fundamentalmente redefinindo o modelo de vendas. Isso resulta em uma drástica redução no Custo de Aquisição de Clientes (CAC) e um aumento exponencial na velocidade e volume de negócios. Nosso foco é claro: transformar agilidade operacional em domínio de mercado.
+                </p>
+            </div>
+            <div class="visual-content hidden-anim from-right">
+                <i class="fas fa-rocket"></i>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="footer">
+        &copy; 2025 Flex Energy - Todos os direitos reservados
+    </footer>
+
+    <script src="projeto-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+/* style.css - VERSÃO INSPIRADA NO MODELO FXA */
+
+/* --- Variáveis Globais e Reset --- */
+:root {
+    --primary-yellow: #FFB800;
+    --primary-orange: #FF7A00;
+    --background-dark: #1A202C;
+    --card-background: #2D3748;
+    --border-color: #4A5568;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A0AEC0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: var(--background-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+}
+
+/* --- Seção Hero (Topo) --- */
+.hero-section {
+    width: 100%;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, rgba(45, 55, 72, 0.5) 0%, var(--background-dark) 100%);
+    text-align: center;
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-icon img {
+    width: 80px;
+    height: auto;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+/* --- Container Principal --- */
+.main-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* --- Grade de Cards de Ação --- */
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.action-card {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+
+.action-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary-yellow);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+}
+
+.card-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+    color: var(--primary-yellow);
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.card-description {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* --- Rodapé --- */
+.footer {
+    width: 100%;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: auto;
+    background-color: #171923;
+}
+
+/* --- Responsividade --- */
+@media (min-width: 768px) {
+    .hero-section {
+        text-align: left;
+    }
+    .logo-container {
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+/* --- ESTILOS PARA PÁGINAS INTERNAS (FORMULÁRIOS, ETC.) --- */
+
+.page-header {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.page-header .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 0; /* Reseta margens do logo-container original */
+}
+
+.header-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.back-to-home {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+.back-to-home:hover {
+    background-color: var(--card-background);
+    color: var(--text-primary);
+}

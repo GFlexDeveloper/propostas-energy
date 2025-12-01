@@ -1,0 +1,393 @@
+/* form-style.css - VERSÃO MELHORADA */
+
+.container {
+    width: 100%;
+    max-width: 850px;
+    margin: 20px 0;
+    padding: 0 15px;
+}
+
+/* --- Seções do Formulário --- */
+.form-section {
+    background: var(--card-background);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid var(--medium-gray);
+    transition: all 0.3s ease;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: var(--primary-yellow);
+    border-bottom: 1px solid var(--medium-gray);
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- Layout dos campos --- */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+input, select {
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--medium-gray);
+    background: var(--background-dark);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-yellow);
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
+}
+
+/* --- Grid de Consumo (SOLUÇÃO DEFINITIVA) --- */
+.consumption-grid {
+    display: grid;
+    /* Esta é a abordagem mais robusta para grids responsivos:
+       - auto-fit: cria colunas para preencher o espaço.
+       - minmax(100px, 1fr): cada coluna terá no mínimo 100px e dividirá o espaço restante (1fr). */
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem; /* Usar 'rem' para um espaçamento mais consistente */
+}
+
+/* É crucial estilizar o item e o input para evitar sobreposição */
+.consumption-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.consumption-item label {
+    font-size: 0.8rem;
+    text-align: center;
+    margin-bottom: 5px; /* Adiciona um pequeno espaço entre o rótulo e a caixa */
+}
+
+.consumption-item input {
+    width: 100%; /* Garante que a caixa de input não ultrapasse o espaço da coluna */
+    text-align: center;
+    padding: 10px 5px; /* Ajusta o preenchimento interno para melhor visualização */
+}
+
+/* --- Botões do formulário --- */
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    gap: 20px;
+}
+
+.btn-voltar {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 2px solid var(--medium-gray);
+}
+
+.btn-voltar:hover {
+    background: var(--medium-gray);
+    color: var(--text-primary);
+}
+
+.btn-enviar {
+    background: var(--primary-yellow);
+    color: var(--dark-gray);
+    font-weight: 700;
+}
+
+.btn-enviar:hover {
+    background: #FFC72C;
+}
+
+/* --- Animações e Transições --- */
+.hidden {
+    display: none !important;
+}
+
+#secaoBaixaTensao {
+    transition: opacity 0.5s ease, max-height 0.5s ease;
+    overflow: hidden;
+    max-height: 2000px; /* Suficiente para o conteúdo */
+}
+
+#secaoBaixaTensao.hidden-transition {
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border: none;
+}
+
+/* Animação de entrada dos formulários */
+.form-section {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.form-section:nth-child(1) { animation-delay: 0.1s; }
+.form-section:nth-child(2) { animation-delay: 0.2s; }
+.form-section:nth-child(3) { animation-delay: 0.3s; }
+.form-section:nth-child(4) { animation-delay: 0.4s; }
+
+.buttons-container {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease 0.5s forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Responsividade --- */
+@media (max-width: 600px) {
+    .form-section {
+        padding: 20px;
+    }
+    .buttons-container {
+        flex-direction: column-reverse;
+    }
+    .btn {
+        width: 100%;
+    }
+}
+/* form-style.css - VERSÃO FINAL ADAPTADA */
+
+body {
+    background-color: #171923; /* Um tom ligeiramente diferente para diferenciar do painel */
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* --- Seções do Formulário --- */
+.form-section {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: var(--primary-yellow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* --- Layout e Campos --- */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.address-row {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+input, select {
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--background-dark);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-yellow);
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.2);
+}
+
+input::placeholder {
+    color: #718096;
+}
+
+/* --- Grid de Consumo --- */
+.consumption-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 15px;
+}
+
+.consumption-item label {
+    font-size: 0.8rem;
+    text-align: center;
+}
+.consumption-item input {
+    text-align: center;
+}
+
+/* --- Seções Dinâmicas --- */
+.hidden {
+    display: none !important;
+}
+
+.hidden-section {
+    transition: opacity 0.4s, max-height 0.4s;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+}
+.hidden-section.visible {
+    max-height: 2000px; /* Valor alto para conter tudo */
+    opacity: 1;
+}
+
+
+/* --- Botões de Ação --- */
+.form-actions {
+    position: sticky;
+    bottom: 0;
+    padding: 15px;
+    background: linear-gradient(to top, var(--background-dark) 70%, transparent);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-enviar {
+    background: var(--primary-yellow);
+    color: var(--dark-gray);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-enviar:hover {
+    background: #FFC72C;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+    .address-row, .form-row {
+        grid-template-columns: 1fr;
+    }
+    .address-row .form-group {
+        grid-column: auto !important;
+    }
+    .page-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+/* --- ESTILOS PARA A PÁGINA DE UPLOAD DE PDF --- */
+
+.section-description {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+/* Esconde o input de arquivo padrão */
+#uploadForm input[type="file"] {
+    display: none;
+}
+
+/* Estiliza a label para parecer um botão/área de drop */
+.file-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    color: var(--text-secondary);
+}
+
+.file-upload-label:hover {
+    background-color: rgba(255, 184, 0, 0.05);
+    border-color: var(--primary-yellow);
+    color: var(--primary-yellow);
+}
+
+#uploadForm .btn-enviar {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Estilo para o botão de voltar no formulário PDF */
+.btn-voltar {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 2px solid var(--border-color);
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.btn-voltar:hover{
+    background-color: var(--card-background);
+    color: var(--text-primary);
+}

@@ -1,0 +1,170 @@
+/* projeto-style.css - Estilos para a Landing Page "Sobre o Projeto" */
+
+:root {
+    --primary-yellow: #FFB800;
+    --background-dark: #1A202C;
+    --card-background: #2D3748;
+    --border-color: #4A5568;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A0AEC0;
+}
+
+body {
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden; /* Evita scroll horizontal causado por animações */
+}
+
+/* --- Navegação/Header Fixo --- */
+.page-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: rgba(26, 32, 44, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
+}
+.header-logo { width: 40px; height: 40px; }
+.page-title { font-size: 1.5rem; }
+.back-to-home { color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.3s; }
+.back-to-home:hover { color: var(--text-primary); }
+
+
+/* --- Seção Hero --- */
+.hero {
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 20px;
+    background: linear-gradient(135deg, rgba(45, 55, 72, 0.1) 0%, rgba(26, 32, 44, 0.9) 100%), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1740&q=80') no-repeat center center/cover;
+}
+
+.hero-content {
+    max-width: 800px;
+}
+
+.hero h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+.hero .highlight {
+    color: var(--primary-yellow);
+}
+
+.hero p {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* --- Seções de Conteúdo --- */
+.content-section {
+    padding: 80px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Alterna o layout das seções */
+.content-section:nth-child(even) {
+    grid-template-columns: 1fr 1fr;
+}
+.content-section:nth-child(even) .text-content {
+    order: 2;
+}
+.content-section:nth-child(even) .visual-content {
+    order: 1;
+}
+
+.text-content h2 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.text-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+}
+
+.visual-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card-background);
+    border-radius: 16px;
+    padding: 40px;
+}
+
+.visual-content i {
+    font-size: 10rem;
+    color: var(--primary-yellow);
+    opacity: 0.8;
+}
+
+/* Estilos para a lista de features */
+.features-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+.features-list li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+.features-list i {
+    color: #38A169; /* Verde para 'check' */
+    font-size: 1.3rem;
+}
+
+
+/* --- Responsividade --- */
+@media (max-width: 900px) {
+    .content-section, .content-section:nth-child(even) {
+        grid-template-columns: 1fr;
+    }
+    .content-section:nth-child(even) .text-content {
+        order: 1;
+    }
+    .content-section:nth-child(even) .visual-content {
+        order: 2;
+    }
+    .hero h1 { font-size: 3rem; }
+    .text-content h2 { font-size: 2rem; }
+}
+
+/* --- Animações --- */
+.hidden-anim {
+    opacity: 0;
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.from-left { transform: translateX(-50px); }
+.from-right { transform: translateX(50px); }
+.from-bottom { transform: translateY(50px); }
+
+.is-visible {
+    opacity: 1;
+    transform: none;
+}

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 function formatArgs(args) {
   return args
@@ -12,3 +13,19 @@ const logger = {
 };
 
 module.exports = { logger };
+=======
+
+function formatArgs(args) {
+  return args
+    .map(a => (a instanceof Error ? a.stack || a.message : typeof a === 'object' ? JSON.stringify(a) : a))
+    .join(' ');
+}
+
+const logger = {
+  info: (...args) => console.log('[INFO]', formatArgs(args)),
+  warn: (...args) => console.warn('[WARN]', formatArgs(args)),
+  error: (...args) => console.error('[ERROR]', formatArgs(args))
+};
+
+module.exports = { logger };
+>>>>>>> b52c59025a5e31c6d8b81637195ee70976af80b7
