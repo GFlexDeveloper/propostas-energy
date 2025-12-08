@@ -12,6 +12,8 @@
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="proposta-style.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
     <div id="loading">Carregando dados da proposta...</div>
@@ -33,6 +35,7 @@
                 <strong>CPF/CNPJ:</strong> <span id="cliente-documento"></span><br/>
                 <strong>ENDEREÇO:</strong> <span id="cliente-endereco"></span><br/>
                 <strong>Nº DE INSTALAÇÃO:</strong> <span id="cliente-instalacao"></span>
+                <span id="cliente-contato" style="display:none;"></span>
             </div>
         </div>
 
@@ -97,16 +100,22 @@
             </div>
         </div>
     </div>
-    <script src="auth.js"></script>
-    <script src="proposta.js"></script>
-<div class="action-buttons-footer">
+    
+    <div class="action-buttons-footer" data-html2canvas-ignore="true">
         <a href="obrigado.html" class="btn-action btn-secondary">
-            <i class="fas fa-arrow-left"></i> Voltar ao Painel
+            <i class="fas fa-arrow-left"></i> Voltar
         </a>
-        <a href="obrigado.html" class="btn-action btn-primary">
-            Começar a Economizar <i class="fas fa-arrow-right"></i>
-        </a>
+        
+        <button id="btn-download-pdf" class="btn-action btn-secondary" style="background: #2D3748; color: white; border: 1px solid #4A5568;">
+            <i class="fas fa-file-pdf"></i> Baixar PDF
+        </button>
+
+        <button id="btn-whatsapp" class="btn-action btn-primary">
+            <i class="fab fa-whatsapp"></i> Enviar no Zap
+        </button>
     </div>
 
+    <script src="auth.js"></script>
+    <script src="proposta.js"></script>
 </body>
 </html>

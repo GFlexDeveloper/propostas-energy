@@ -91,6 +91,8 @@ async function buscarEnderecoPorCEP() {
 }
 
 // === LÓGICA DE CÁLCULO E ENVIO ===
+// Em Frontend/form-script.js
+
 function calcularEconomia(data) {
     const valorKwh = parseFloat(data.valorKwh) || VALOR_KWH_PADRAO;
     const desconto = parseFloat(data.desconto) || 0;
@@ -99,7 +101,7 @@ function calcularEconomia(data) {
     if (data.tipoTensao === 'baixa' && data.tipoPadrao) {
         const custoDisponibilidadeKwh = {'monofasico': 30, 'bifasico': 50, 'trifasico': 100}[data.tipoPadrao] || 0;
         const geracao = (data.geracaoPropria === 'sim') ? (parseFloat(data.mediaInjecao) || 0) : 0;
-        const custoIluminacaoPublica = 20;
+        const custoIluminacaoPublica = 20; // Valor estimado fixo
         let consumoCalculado = 0;
 
         if (data.tipoConsumo === 'media') {
@@ -118,9 +120,17 @@ function calcularEconomia(data) {
         }
 
         if (consumoCalculado > 0) {
+            // 1. Calcula a economia sobre o que é compensável (Consumo - Disponibilidade)
             economiaMedia = Math.max(0, (consumoCalculado - custoDisponibilidadeKwh - geracao) * valorKwh * (desconto / 100));
+            
+            // 2. Fatura Cemig Atual (Referência)
             valorPagoCemigMedia = (consumoCalculado * valorKwh) + custoIluminacaoPublica;
-            valorPagoFlexMedia = valorPagoCemigMedia - economiaMedia + (custoDisponibilidadeKwh * valorKwh);
+            
+            // 3. Nova Fatura (Fatura Atual - Economia)
+            // CORREÇÃO: Removemos o "+ (custoDisponibilidadeKwh * valorKwh)" que estava duplicando a cobrança
+            valorPagoFlexMedia = valorPagoCemigMedia - economiaMedia;
+            
+            // Totais Anuais
             economiaAnual = economiaMedia * 12;
             valorPagoFlexAnual = valorPagoFlexMedia * 12;
             valorPagoCemigAnual = valorPagoCemigMedia * 12;

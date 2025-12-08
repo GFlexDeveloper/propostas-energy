@@ -117,15 +117,19 @@ if (cpfCnpjInput) cpfCnpjInput.addEventListener('input', (e) => e.target.value =
 if (contatoInput) contatoInput.addEventListener('input', (e) => e.target.value = formatadores.telefone(e.target.value));
 
 // === CÁLCULO DE ECONOMIA ===
+// Em Frontend/pdf-script.js
+
 function calcularEconomia(data) {
     const valorKwh = parseFloat(data.valorKwh) || VALOR_KWH_PADRAO;
     const desconto = parseFloat(data.desconto) || 0;
     let economiaMedia = 0, economiaAnual = 0, valorPagoFlexMedia = 0, valorPagoFlexAnual = 0, valorPagoCemigMedia = 0, valorPagoCemigAnual = 0;
+    
     if (data.tipoTensao === 'baixa' && data.tipoPadrao) {
         const custoDisponibilidadeKwh = {'monofasico': 30, 'bifasico': 50, 'trifasico': 100}[data.tipoPadrao] || 0;
         const geracao = (data.geracaoPropria === 'sim') ? (parseFloat(data.mediaInjecao) || 0) : 0;
         const custoIluminacaoPublica = 20;
         let consumoCalculado = 0;
+        
         if (data.tipoConsumo === 'media') {
             consumoCalculado = parseFloat(data.mediaConsumo) || 0;
         } else {
@@ -137,10 +141,14 @@ function calcularEconomia(data) {
             }, { totalConsumo: 0, mesesPreenchidos: 0 });
             consumoCalculado = mesesPreenchidos > 0 ? totalConsumo / mesesPreenchidos : 0;
         }
+        
         if (consumoCalculado > 0) {
             economiaMedia = Math.max(0, (consumoCalculado - custoDisponibilidadeKwh - geracao) * valorKwh * (desconto / 100));
             valorPagoCemigMedia = (consumoCalculado * valorKwh) + custoIluminacaoPublica;
-            valorPagoFlexMedia = valorPagoCemigMedia - economiaMedia + (custoDisponibilidadeKwh * valorKwh);
+            
+            // CORREÇÃO AQUI TAMBÉM:
+            valorPagoFlexMedia = valorPagoCemigMedia - economiaMedia;
+            
             economiaAnual = economiaMedia * 12;
             valorPagoFlexAnual = valorPagoFlexMedia * 12;
             valorPagoCemigAnual = valorPagoCemigMedia * 12;
