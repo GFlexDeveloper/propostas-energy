@@ -10,12 +10,11 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     btn.disabled = true;
 
     try {
-        // A URL da API, igual à usada no login.html
-        // Esta rota /api/usuarios/registrar já existe no seu server.js
-        const response = await fetch('http://localhost:3000/api/usuarios/registrar', {
+        // --- CORREÇÃO AQUI: URL DO RENDER ---
+        const response = await fetch('https://propostas-energy.onrender.com/api/usuarios/registrar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome, email, senha, cargo: 'Vendedor' }) // 'cargo' é opcional, mas podemos definir um padrão
+            body: JSON.stringify({ nome, email, senha, cargo: 'Vendedor' })
         });
         const result = await response.json();
 
@@ -26,6 +25,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
             alert('Erro: ' + result.message);
         }
     } catch (error) {
+        console.error(error); // Ajuda a debugar
         alert('Erro de conexão. Verifique se o servidor está rodando.');
     } finally {
         btn.innerHTML = originalText;
