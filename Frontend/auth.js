@@ -2,14 +2,12 @@
 
 const FlexAuth = {
     token: null,
-    // URL base da sua API - Agora é dinâmica!
-    // Se estiver rodando no Render, usa a URL do Render. Se não, usa localhost.
-    apiBaseUrl: window.location.hostname.includes('onrender.com') 
-                  ? `https://${window.location.hostname}` 
-                  : 'http://localhost:3000',
+    // URL do seu Backend no Render
+    apiBaseUrl: 'https://propostas-energy.onrender.com', 
 
     init: function() {
         this.token = localStorage.getItem('flex-token');
+        // Se não tiver token e não estiver na tela de login, manda pro login
         if (!this.token && !window.location.pathname.endsWith('login.html')) {
             window.location.href = 'login.html';
         }
@@ -32,12 +30,12 @@ const FlexAuth = {
             ...options.headers
         };
 
+        // Se tiver corpo e não for arquivo (FormData), define como JSON
         if (options.body && !(options.body instanceof FormData)) {
             headers['Content-Type'] = 'application/json';
         }
 
-        // --- AQUI ESTÁ A CORREÇÃO ---
-        // Garante que não haverá barras duplas na URL final
+        // Monta a URL completa (Render + Endpoint)
         const url = `${this.apiBaseUrl}${endpoint}`;
 
         try {
@@ -46,6 +44,7 @@ const FlexAuth = {
                 headers: headers
             });
 
+            // Se o token expirou ou é inválido (401/403)
             if (response.status === 401 || response.status === 403) {
                 alert('Sua sessão expirou. Por favor, faça o login novamente.');
                 this.logout();
