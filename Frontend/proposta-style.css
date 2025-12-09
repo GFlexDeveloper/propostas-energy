@@ -396,3 +396,21 @@ body {
         margin: 0;
     }
 }
+
+/* --- AJUSTES ESPECÍFICOS PARA GERAÇÃO DE PDF VIA html2pdf (.pdf-mode) --- */
+
+/* 210mm em tela ≈ 794px (a 96dpi) */
+.pdf-mode.proposal-container {
+    width: 794px !important;          /* largura igual a A4 */
+    max-width: 794px !important;
+    margin: 0 auto !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #171923 !important;   /* fundo escuro igual à tela */
+    padding: 16px 24px 24px 24px !important;
+    box-sizing: border-box;
+}
+
+.pdf-mode * {
+    animation: none !important; /* evita bug de canvas */
+}

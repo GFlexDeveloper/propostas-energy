@@ -33,6 +33,7 @@ async function extrairCamposComLLM(textoBruto) {
       Retorne APENAS um JSON válido nesta estrutura:
       {
         "nome": "string",
+        "NumeroInstalacao": "string",
         "cpfCnpj": "string",
         "numeroInstalacao": "string",
         "vencimento": "dd/mm/aaaa",

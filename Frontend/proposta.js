@@ -82,16 +82,23 @@ if (!numeroInstalacao) {
 
 // --- OPÇÕES DO PDF (AJUSTADAS) ---
 const getPdfOptions = () => ({
-    margin: 0, // sem margem extra na folha
+    margin: 0,
     filename: `Proposta_Flex_${getNumeroInstalacao() || 'Energy'}.pdf`,
     image: { type: 'jpeg', quality: 1 },
     html2canvas: { 
-        scale: 3,          // aumenta a qualidade
+        scale: 2.5,                // boa qualidade sem ficar pesado demais
         useCORS: true,
-        backgroundColor: '#171923' // fundo escuro igual ao body
+        backgroundColor: '#171923',
+        scrollY: 0                 // ignora scroll da página
     },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    jsPDF: { 
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
+    },
+    pagebreak: { mode: ['css', 'legacy'] }
 });
+
 
 // --- LÓGICA DE BOTÕES (PDF e WHATSAPP) ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -99,10 +106,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Baixar PDF
     const btnDownload = document.getElementById('btn-download-pdf');
     if (btnDownload) {
-        btnDownload.addEventListener('click', () => {
-            window.print(); // 🔥 Mesmo resultado do Ctrl+P
+        btnDownload.addEventListener('click', async () => {
+            const element = document.getElementById('proposal-content');
+            const originalText = btnDownload.innerHTML;
+
+            btnDownload.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
+            btnDownload.disabled = true;
+
+            // ativa layout especial pra PDF (igual ao “print”)
+            element.classList.add('pdf-mode');
+
+            try {
+                await html2pdf()
+                    .set(getPdfOptions())
+                    .from(element)
+                    .save();
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao gerar PDF');
+            } finally {
+                element.classList.remove('pdf-mode'); // volta ao normal
+                btnDownload.innerHTML = originalText;
+                btnDownload.disabled = false;
+            }
         });
     }
+
 
 
 
