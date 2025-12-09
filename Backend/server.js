@@ -152,32 +152,46 @@ app.get('/api/propostas/instalacao/:numeroInstalacao', verificarToken, async (re
 });
 
 // --- ROTA DE WHATSAPP (UAZAPI) ---
+a// --- ROTA DE WHATSAPP (UAZAPI) ---
 app.post('/api/enviar-whatsapp', verificarToken, upload.single('pdfFile'), async (req, res) => {
     try {
         const { phone, message, fileName } = req.body;
-        
+
         if (!req.file || !phone) {
             return res.status(400).json({ success: false, message: 'Faltam dados.' });
         }
 
+        // Converte o PDF recebido (buffer) em base64
         const base64File = req.file.buffer.toString('base64');
-        const UAZAPI_URL = `https://uazapi.dev/api/messages/send-doc`; 
 
-        const payload = {
-            instance: process.env.UAZAPI_INSTANCE,
-            token: process.env.UAZAPI_TOKEN,
-            number: phone, 
-            media: base64File,
-            filename: fileName || 'proposta.pdf',
-            caption: message || 'Segue sua proposta.'
+        // Se a Uazapi aceitar base64, normalmente funciona bem assim:
+        const fileAsDataUrl = `data:application/pdf;base64,${base64File}`;
+
+        const UAZAPI_URL = 'https://flexgrupo.uazapi.com/send/media';
+
+        const options = {
+            method: 'POST',
+            url: UAZAPI_URL,
+            headers: {
+                Accept: 'application/json',
+                token: process.env.UAZAPI_TOKEN,      // 🔒 vem do .env
+                'Content-Type': 'application/json'
+            },
+            data: {
+                number: phone,                        // ex: 5537999999999
+                type: 'document',                     // conforme doc
+                file: fileAsDataUrl,                  // AQUI: PDF em base64
+                docName: fileName || 'Proposta.pdf',  // nome exibido no Whats
+                text: message || 'Segue sua proposta oficial da Flex Energy.'
+            }
         };
 
-        const response = await axios.post(UAZAPI_URL, payload);
-        res.json({ success: true, data: response.data });
+        const { data } = await axios.request(options);
+        return res.json({ success: true, data });
 
     } catch (error) {
         console.error('Erro Zap:', error.response?.data || error.message);
-        res.status(500).json({ success: false, message: 'Erro no envio.' });
+        return res.status(500).json({ success: false, message: 'Erro no envio.' });
     }
 });
 

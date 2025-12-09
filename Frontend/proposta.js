@@ -80,36 +80,45 @@ if (!numeroInstalacao) {
     buscarEExibirProposta(numeroInstalacao);
 }
 
+// --- OPÇÕES DO PDF (AJUSTADAS) ---
+const getPdfOptions = () => ({
+    margin: 0, // sem margem extra na folha
+    filename: `Proposta_Flex_${getNumeroInstalacao() || 'Energy'}.pdf`,
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: { 
+        scale: 3,          // aumenta a qualidade
+        useCORS: true,
+        backgroundColor: '#171923' // fundo escuro igual ao body
+    },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+});
+
 // --- LÓGICA DE BOTÕES (PDF e WHATSAPP) ---
 document.addEventListener('DOMContentLoaded', () => {
     
-    const getPdfOptions = () => ({
-        margin: [5, 5, 5, 5],
-        filename: `Proposta_Flex_${getNumeroInstalacao() || 'Energy'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    });
-
     // 1. Baixar PDF
     const btnDownload = document.getElementById('btn-download-pdf');
     if (btnDownload) {
-        btnDownload.addEventListener('click', () => {
+        btnDownload.addEventListener('click', async () => {
             const element = document.getElementById('proposal-content');
             const originalText = btnDownload.innerHTML;
             
             btnDownload.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
             btnDownload.disabled = true;
 
-            html2pdf().set(getPdfOptions()).from(element).save().then(() => {
-                btnDownload.innerHTML = originalText;
-                btnDownload.disabled = false;
-            }).catch(err => {
+            // aplica modo PDF (layout ocupa a página toda)
+            element.classList.add('pdf-mode');
+
+            try {
+                await html2pdf().set(getPdfOptions()).from(element).save();
+            } catch (err) {
                 console.error(err);
                 alert('Erro ao gerar PDF');
+            } finally {
+                element.classList.remove('pdf-mode');
                 btnDownload.innerHTML = originalText;
                 btnDownload.disabled = false;
-            });
+            }
         });
     }
 
@@ -124,8 +133,15 @@ document.addEventListener('DOMContentLoaded', () => {
             btnZap.disabled = true;
 
             try {
-                // Gera o PDF
-                const pdfBlob = await html2pdf().set(getPdfOptions()).from(element).output('blob');
+                // Gera o PDF com o mesmo layout ajustado
+                element.classList.add('pdf-mode');
+
+                const pdfBlob = await html2pdf()
+                    .set(getPdfOptions())
+                    .from(element)
+                    .output('blob');
+
+                element.classList.remove('pdf-mode');
 
                 // Pega o telefone (tenta do campo oculto, senão prompt)
                 let phone = document.getElementById('cliente-contato')?.textContent || ''; 
@@ -135,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (!phone) throw new Error("Telefone não informado.");
 
-                // Formata telefone para 5537...
+                // Formata telefone para 55...
                 phone = phone.replace(/\D/g, '');
                 if (phone.length <= 11) phone = '55' + phone;
 
@@ -165,6 +181,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error(err);
                 alert('❌ Erro: ' + err.message);
             } finally {
+                // garante que o modo pdf não fique preso em caso de erro
+                const element = document.getElementById('proposal-content');
+                element.classList.remove('pdf-mode');
+
                 btnZap.innerHTML = originalText;
                 btnZap.disabled = false;
             }
