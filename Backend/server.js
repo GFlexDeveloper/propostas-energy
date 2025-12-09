@@ -152,7 +152,7 @@ app.get('/api/propostas/instalacao/:numeroInstalacao', verificarToken, async (re
 });
 
 // --- ROTA DE WHATSAPP (UAZAPI) ---
-a// --- ROTA DE WHATSAPP (UAZAPI) ---
+// --- ROTA DE WHATSAPP (UAZAPI) ---
 app.post('/api/enviar-whatsapp', verificarToken, upload.single('pdfFile'), async (req, res) => {
     try {
         const { phone, message, fileName } = req.body;
