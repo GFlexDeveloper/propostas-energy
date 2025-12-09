@@ -280,3 +280,32 @@ body {
 .pdf-mode * {
     animation: none !important;
 }
+
+/* ===== MODO IMPRESSÃO (Ctrl+P e botão) ===== */
+@media print {
+
+
+    /* esconde botões, loader, etc */
+    .action-buttons-footer,
+    #loading {
+        display: none !important;
+    }
+
+    /* só a proposta aparece e centralizada */
+    #proposal-content {
+        box-shadow: none !important;
+        margin: 0 !important;
+        width: 210mm;        /* largura A4 */
+        min-height: 297mm;   /* altura A4 */
+        max-height: 297mm;
+        page-break-after: avoid;
+        border-radius: 0 !important;
+    }
+
+    /* remove margens padrão do navegador na impressão (alguns ignoram, mas ajuda) */
+    @page {
+        size: A4;
+        margin: 0;
+    }
+}
+

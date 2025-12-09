@@ -99,28 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Baixar PDF
     const btnDownload = document.getElementById('btn-download-pdf');
     if (btnDownload) {
-        btnDownload.addEventListener('click', async () => {
-            const element = document.getElementById('proposal-content');
-            const originalText = btnDownload.innerHTML;
-            
-            btnDownload.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
-            btnDownload.disabled = true;
-
-            // aplica modo PDF (layout ocupa a página toda)
-            element.classList.add('pdf-mode');
-
-            try {
-                await html2pdf().set(getPdfOptions()).from(element).save();
-            } catch (err) {
-                console.error(err);
-                alert('Erro ao gerar PDF');
-            } finally {
-                element.classList.remove('pdf-mode');
-                btnDownload.innerHTML = originalText;
-                btnDownload.disabled = false;
-            }
+        btnDownload.addEventListener('click', () => {
+            window.print(); // 🔥 Mesmo resultado do Ctrl+P
         });
     }
+
+
 
     // 2. Enviar WhatsApp
     const btnZap = document.getElementById('btn-whatsapp');
