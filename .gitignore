@@ -33,4 +33,5 @@ Thumbs.db
 
 # Arquivos temporários
 *.tmp
-*.temp
+*.tempnode_modules/
+Backend/node_modules/
