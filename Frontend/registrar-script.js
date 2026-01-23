@@ -11,7 +11,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
 
     try {
         // --- CORREÇÃO AQUI: URL DO RENDER ---
-        const response = await fetch('https://propostas-energy.onrender.com/api/usuarios/registrar', {
+        const response = await fetch('https://api.flexgrupo.com.br/api/usuarios/registrar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nome, email, senha, cargo: 'Vendedor' })
