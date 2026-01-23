@@ -1,0 +1,416 @@
+/* proposta-style.css - Estilos para a página de visualização da proposta */
+
+body {
+    background-color: #171923;
+    color: var(--text-secondary);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* CONTAINER PRINCIPAL DA PROPOSTA */
+
+.proposal-container {
+    max-width: 900px;
+    margin: 30px auto;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* CABEÇALHO */
+
+.header {
+    padding: 30px;
+    background-color: #1A202C;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Logo de texto (se usar) */
+.logo-info .logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary-yellow);
+}
+
+/* Logo de imagem */
+.proposal-logo {
+    width: 70px !important;   /* LOGO PEQUENO */
+    height: auto !important;
+    display: block !important;
+}
+
+.proposal-meta {
+    text-align: right;
+    font-size: 0.9rem;
+}
+
+.divider {
+    border: none;
+    height: 1px;
+    background-color: var(--border-color);
+    margin-bottom: 25px;
+}
+
+/* DADOS DO CLIENTE */
+
+.client-details {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.client-details strong {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* CONTEÚDO PRINCIPAL */
+
+.main-content {
+    padding: 0 30px 30px 30px;
+}
+
+/* BANNER AMARELO */
+
+.main-banner {
+    background-color: var(--primary-yellow);
+    color: black;
+    text-align: center;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 -30px 30px -30px;
+    text-transform: uppercase;
+}
+
+/* GRID DE CARDS */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background-color: #1A202C;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.card-header i {
+    font-size: 1.1rem;
+    color: var(--primary-yellow);
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.card-body .main-value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.card-body .suffix {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-left: 5px;
+}
+
+.highlight-green {
+    color: #38A169;
+}
+
+/* TABELA DE SIMULAÇÃO */
+
+.simulation-section {
+    margin-top: 30px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 18px;
+}
+
+.simulation-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1A202C;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 0.95rem;
+}
+
+.simulation-table th,
+.simulation-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.simulation-table thead th {
+    font-weight: 600;
+    color: var(--text-secondary);
+    background-color: #2D3748;
+}
+
+.simulation-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.simulation-table td:first-child {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.total-savings-row td {
+    font-weight: bold;
+    color: #38A169;
+    font-size: 1.05rem;
+}
+
+/* LOADING */
+
+#loading {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* BOTÕES DO RODAPÉ */
+
+.action-buttons-footer {
+    text-align: center;
+    padding: 24px 20px;
+    background-color: #1A202C;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-action {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin: 8px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.btn-secondary {
+    background-color: var(--card-background);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-primary {
+    background-color: var(--primary-yellow);
+    color: black;
+    font-weight: 700;
+    border-color: var(--primary-yellow);
+    animation: pulse 2s infinite;
+}
+
+.btn-primary:hover {
+    background-color: #FFC72C;
+    border-color: #FFC72C;
+    animation-play-state: paused;
+}
+
+/* Animação de pulsação */
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 184, 0, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(255, 184, 0, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 184, 0, 0);
+    }
+}
+
+/* --- AJUSTES ESPECÍFICOS PARA GERAÇÃO DE PDF VIA html2pdf (.pdf-mode) --- */
+
+.pdf-mode.proposal-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.pdf-mode * {
+    animation: none !important;
+}
+
+/* ===== MODO IMPRESSÃO (Ctrl+P e botão) ===== */
+
+@media print {
+
+    /* Fundo escuro igual ao da tela */
+    body,
+    #proposal-content {
+        background: #171923 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Some com botões e loading */
+    .action-buttons-footer,
+    #loading {
+        display: none !important;
+    }
+
+    /* Ajusta o container para ocupar a página A4 */
+    #proposal-content {
+        margin: 0 !important;
+        width: 210mm;
+        min-height: 297mm;
+        max-height: 297mm;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 16px 24px 24px 24px !important;
+        box-sizing: border-box;
+        page-break-after: avoid;
+    }
+
+    /* Deixar tudo um pouco mais compacto para caber em 1 página */
+
+    .header {
+        padding: 18px !important;
+    }
+
+    .top-bar {
+        margin-bottom: 14px !important;
+        gap: 10px !important;
+    }
+
+    .client-details {
+        font-size: 0.85rem !important;
+        line-height: 1.4 !important;
+    }
+
+    .main-content {
+        padding: 0 18px 18px 18px !important;
+    }
+
+    .main-banner {
+        padding: 10px !important;
+        font-size: 1rem !important;
+        margin: 0 -18px 18px -18px !important;
+    }
+
+    .card-grid {
+        gap: 12px !important;
+        margin-bottom: 18px !important;
+    }
+
+    .card {
+        padding: 12px !important;
+    }
+
+    .card-header h3 {
+        font-size: 0.9rem !important;
+    }
+
+    .card-body .main-value {
+        font-size: 1.4rem !important;
+    }
+
+    .section-title {
+        font-size: 1.05rem !important;
+        margin-bottom: 12px !important;
+    }
+
+    .simulation-section {
+        margin-top: 18px !important;
+    }
+
+    .simulation-table {
+        font-size: 0.85rem !important;
+    }
+
+    .simulation-table th,
+    .simulation-table td {
+        padding: 8px !important;
+    }
+
+    .total-savings-row td {
+        font-size: 0.95rem !important;
+    }
+
+    /* Página A4 sem margem extra */
+    @page {
+        size: A4;
+        margin: 0;
+    }
+}
+
+/* --- AJUSTES ESPECÍFICOS PARA GERAÇÃO DE PDF VIA html2pdf (.pdf-mode) --- */
+
+/* 210mm em tela ≈ 794px (a 96dpi) */
+.pdf-mode.proposal-container {
+    width: 794px !important;          /* largura igual a A4 */
+    max-width: 794px !important;
+    margin: 0 auto !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #171923 !important;   /* fundo escuro igual à tela */
+    padding: 16px 24px 24px 24px !important;
+    box-sizing: border-box;
+}
+
+.pdf-mode * {
+    animation: none !important; /* evita bug de canvas */
+}

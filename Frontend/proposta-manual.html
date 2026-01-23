@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Energy - Proposta Manual</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="form-style.css"> 
+</head>
+<body class="loading">
+    <header class="page-header">
+        <div class="logo-container">
+            <img src="Midia/logo-icon.png" alt="Logo Flex Energy" class="header-logo">
+            <h1 class="page-title">Gerar Proposta Manual</h1>
+        </div>
+        <a href="index.html" class="back-to-home">
+            <i class="fas fa-arrow-left"></i>
+            <span>Voltar ao Painel</span>
+        </a>
+    </header>
+
+    <div class="container">
+        <form id="proposalForm">
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-user-circle"></i> Dados Pessoais</h2>
+                
+                <div class="form-row">
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Representante Responsável</label>
+                        <input type="text" id="campoRepresentante" disabled style="background-color: #e9ecef; color: #555; font-weight: 600;" placeholder="Carregando...">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome">Nome Completo / Razão Social *</label>
+                        <input type="text" id="nome" name="nome" required placeholder="Insira o nome completo">
+                    </div>
+                    <div class="form-group">
+                        <label for="cpfCnpj">CPF/CNPJ *</label>
+                        <input type="text" id="cpfCnpj" name="cpfCnpj" required placeholder="00.000.000/0000-00">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" placeholder="contato@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="contato">Telefone para Contato *</label>
+                        <input type="text" id="contato" name="telefone" required placeholder="(00) 90000-0000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="classe">Classe *</label>
+                        <select id="classe" name="categoria" required>
+                            <option value="">Selecione...</option>
+                            <option value="Residencial">Residencial</option>
+                            <option value="Comercial">Comercial</option>
+                            <option value="Industrial">Industrial</option>
+                            <option value="Rural">Rural</option>
+                            <option value="Poder Público">Poder Público</option>
+                            <option value="Serviço Público">Serviço Público</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoTensao">Tipo de Tensão *</label>
+                        <select id="tipoTensao" name="tipoTensao" required>
+                            <option value="">Selecione...</option>
+                            <option value="Baixa Tensao">Baixa Tensão</option>
+                            <option value="Media Tensao">Média Tensão</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Endereço Completo</h2>
+                <div class="form-row address-row">
+                    <div class="form-group" style="grid-column: 1 / 3;">
+                        <label for="cep">CEP *</label>
+                        <input type="text" id="cep" name="cep" required placeholder="00000-000">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / 4;">
+                        <label for="rua">Rua *</label>
+                        <input type="text" id="rua" name="logradouro" required placeholder="Nome da rua">
+                    </div>
+                    <div class="form-group" style="grid-column: 4 / 5;">
+                        <label for="numero">Número *</label>
+                        <input type="text" id="numero" name="numero" required placeholder="Ex: 123">
+                    </div>
+                     <div class="form-group" style="grid-column: 1 / 3;">
+                        <label for="bairro">Bairro *</label>
+                        <input type="text" id="bairro" name="bairro" required>
+                    </div>
+                    <div class="form-group" style="grid-column: 3 / 5;">
+                        <label for="cidade">Cidade *</label>
+                        <input type="text" id="cidade" name="cidade" required>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / 3;">
+                        <label for="complemento">Complemento</label>
+                        <input type="text" id="complemento" name="complemento" placeholder="Apto, Bloco, etc.">
+                    </div>
+                    <div class="form-group" style="grid-column: 3 / 5;">
+                        <label for="estado">Estado *</label>
+                        <select id="estado" name="uf" required>
+                             <option value="">Selecione...</option>
+                             <option value="AC">Acre</option>
+                             <option value="AL">Alagoas</option>
+                             <option value="AP">Amapá</option>
+                             <option value="AM">Amazonas</option>
+                             <option value="BA">Bahia</option>
+                             <option value="CE">Ceará</option>
+                             <option value="DF">Distrito Federal</option>
+                             <option value="ES">Espírito Santo</option>
+                             <option value="GO">Goiás</option>
+                             <option value="MA">Maranhão</option>
+                             <option value="MT">Mato Grosso</option>
+                             <option value="MS">Mato Grosso do Sul</option>
+                             <option value="MG">Minas Gerais</option>
+                             <option value="PA">Pará</option>
+                             <option value="PB">Paraíba</option>
+                             <option value="PR">Paraná</option>
+                             <option value="PE">Pernambuco</option>
+                             <option value="PI">Piauí</option>
+                             <option value="RJ">Rio de Janeiro</option>
+                             <option value="RN">Rio Grande do Norte</option>
+                             <option value="RS">Rio Grande do Sul</option>
+                             <option value="RO">Rondônia</option>
+                             <option value="RR">Roraima</option>
+                             <option value="SC">Santa Catarina</option>
+                             <option value="SP">São Paulo</option>
+                             <option value="SE">Sergipe</option>
+                             <option value="TO">Tocantins</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-bolt"></i> Dados da Instalação</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="numeroInstalacao">Número de Instalação (UC) *</label>
+                        <input type="text" id="numeroInstalacao" name="uc" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="distribuidora">Distribuidora</label>
+                        <input type="text" id="distribuidora" name="concessionaria" value="CEMIG">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="login">Login Concessionária (Opcional)</label>
+                        <input type="text" id="login" name="login" placeholder="Usuário/CPF na Cemig">
+                    </div>
+                    <div class="form-group">
+                        <label for="senha">Senha Concessionária (Opcional)</label>
+                        <input type="password" id="senha" name="senha" placeholder="Senha de acesso">
+                    </div>
+                </div>
+            </div>
+            
+            <div id="secaoBaixaTensao" class="hidden-section">
+                <div class="form-section">
+                    <h2 class="section-title"><i class="fas fa-chart-bar"></i> Consumo (Baixa Tensão)</h2>
+                    <div class="form-group">
+                        <label for="tipoConsumo">Como deseja informar o consumo?</label>
+                        <select id="tipoConsumo" name="tipoConsumo">
+                            <option value="mensal">Informar o consumo de cada mês</option>
+                            <option value="media">Informar a média de consumo</option>
+                        </select>
+                    </div>
+                    <div id="consumoMensal">
+                        <div class="consumption-grid">
+                            <div class="consumption-item"><label for="janeiro">Janeiro</label><input type="number" id="janeiro" name="janeiro" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="fevereiro">Fevereiro</label><input type="number" id="fevereiro" name="fevereiro" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="marco">Março</label><input type="number" id="marco" name="marco" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="abril">Abril</label><input type="number" id="abril" name="abril" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="maio">Maio</label><input type="number" id="maio" name="maio" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="junho">Junho</label><input type="number" id="junho" name="junho" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="julho">Julho</label><input type="number" id="julho" name="julho" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="agosto">Agosto</label><input type="number" id="agosto" name="agosto" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="setembro">Setembro</label><input type="number" id="setembro" name="setembro" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="outubro">Outubro</label><input type="number" id="outubro" name="outubro" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="novembro">Novembro</label><input type="number" id="novembro" name="novembro" min="0" step="0.01"></div>
+                            <div class="consumption-item"><label for="dezembro">Dezembro</label><input type="number" id="dezembro" name="dezembro" min="0" step="0.01"></div>
+                        </div>
+                    </div>
+                    <div id="consumoMedia" class="hidden">
+                        <div class="form-group">
+                            <label for="mediaConsumo">Média de Consumo (kWh/mês)</label>
+                            <input type="number" id="mediaConsumo" name="mediaConsumo" min="0" step="0.01">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2 class="section-title"><i class="fas fa-cogs"></i> Detalhes Técnicos</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tipoPadrao">Fase / Padrão</label>
+                            <select id="tipoPadrao" name="fase">
+                                <option value="">Selecione...</option>
+                                <option value="Monofásico">Monofásico</option>
+                                <option value="Bifásico">Bifásico</option>
+                                <option value="Trifásico">Trifásico</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="geracaoPropria">Possui Geração Própria?</label>
+                            <select id="geracaoPropria" name="geracaoPropria"><option value="">Selecione...</option><option value="sim">Sim</option><option value="nao">Não</option></select>
+                        </div>
+                    </div>
+                    <div id="injecaoMedia" class="form-group hidden">
+                        <label for="mediaInjecao">Média de Injeção (kWh/mês)</label>
+                        <input type="number" id="mediaInjecao" name="mediaInjecao" min="0" step="0.01">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="desconto">Desconto Aplicado (%)</label>
+                            <input type="number" id="desconto" name="desconto" min="0" max="100" step="0.01" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="valorKwh">Valor do kWh (R$)</label>
+                            <input type="number" id="valorKwh" name="tarifa" min="0" step="0.01" value="1.19">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-enviar">
+                    <i class="fas fa-paper-plane"></i>
+                    Enviar Proposta
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="form-script.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Usa o seu arquivo auth.js para pegar o token
+            const token = localStorage.getItem('flex-token');
+            if(token) {
+                try {
+                    // Decodifica o token (apenas a parte do payload)
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+
+                    const usuario = JSON.parse(jsonPayload);
+                    
+                    // Preenche o campo visual
+                    const campoRep = document.getElementById('campoRepresentante');
+                    if(campoRep && usuario.nome) {
+                        campoRep.value = usuario.nome + " (Você)";
+                    }
+                } catch (e) {
+                    console.error("Erro ao ler dados do usuário", e);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

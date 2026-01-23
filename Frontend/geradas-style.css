@@ -1,0 +1,62 @@
+/* geradas-style.css - Estilos para a página de Propostas Geradas */
+
+.main-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+#proposals-table-container {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden; /* Garante que a tabela respeite as bordas arredondadas */
+}
+
+.proposals-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.proposals-table th, .proposals-table td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.proposals-table thead th {
+    background-color: #1A202C;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.proposals-table tbody tr {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.proposals-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.proposals-table tbody tr:hover {
+    background-color: rgba(255, 184, 0, 0.05); /* Amarelo bem sutil no hover */
+}
+
+.proposals-table td {
+    color: var(--text-primary);
+}
+
+.proposals-table td:first-child {
+    font-weight: 600;
+}
+
+#table-status {
+    padding: 50px;
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
