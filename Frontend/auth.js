@@ -1,14 +1,13 @@
-// Frontend/auth.js
-
-const FlexAuth = {
+window.FlexAuth = {
     token: null,
-    // URL do seu Backend no Render
-    apiBaseUrl: 'https://api.flexgrupo.com.br/', 
+     apiBaseUrl: 'https://api.flexgrupo.com.br', 
 
     init: function() {
         this.token = localStorage.getItem('flex-token');
-        // Se não tiver token e não estiver na tela de login, manda pro login
-        if (!this.token && !window.location.pathname.endsWith('login.html')) {
+             const isLoginPage = window.location.pathname.includes('login.html');
+        
+        if (!this.token && !isLoginPage) {
+            console.warn("Sem token, redirecionando para login...");
             window.location.href = 'login.html';
         }
     },
@@ -35,8 +34,8 @@ const FlexAuth = {
             headers['Content-Type'] = 'application/json';
         }
 
-        // Monta a URL completa (Render + Endpoint)
-        const url = `${this.apiBaseUrl}${endpoint}`;
+        const safeEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+        const url = `${this.apiBaseUrl}${safeEndpoint}`;
 
         try {
             const response = await fetch(url, {
@@ -44,7 +43,6 @@ const FlexAuth = {
                 headers: headers
             });
 
-            // Se o token expirou ou é inválido (401/403)
             if (response.status === 401 || response.status === 403) {
                 alert('Sua sessão expirou. Por favor, faça o login novamente.');
                 this.logout();

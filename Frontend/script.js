@@ -1,8 +1,14 @@
 // Frontend/script.js
 
+
 FlexAuth.init(); // Protege a página
 
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.FlexAuth) {
+        window.FlexAuth.init(); 
+    } else {
+        console.error("Erro: FlexAuth não encontrado. Verifique se o auth.js foi carregado.");
+    }
     const cardManual = document.getElementById('card-manual');
     const cardPdf = document.getElementById('card-pdf');
     const cardGeradas = document.getElementById('card-geradas');

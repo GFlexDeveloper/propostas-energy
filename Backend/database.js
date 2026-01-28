@@ -99,7 +99,19 @@ async function initDb() {
     }
 }
 
+
 async function inserirProposta(proposta, usuarioId) {
+    // 1. Cálculos de apoio (Valores padrão caso venham vazios)
+    const tarifa = parseFloat(proposta.tarifa || proposta.valorKwh || 1.19);
+    const consumo = parseFloat(proposta.mediaConsumo || 0);
+    const descontoPercentual = parseFloat(proposta.desconto || 0) / 100;
+    const custoIluminacao = 20;
+
+    // 2. Lógica de economia (Mantendo a consistência com o front)
+    const economiaMedia = consumo * tarifa * descontoPercentual;
+    const valorPagoCemigMedia = (consumo * tarifa) + custoIluminacao;
+    const valorPagoFlexMedia = valorPagoCemigMedia - economiaMedia;
+
     const sql = `
       INSERT INTO propostas (
         usuario_id, nome, cpf_cnpj, endereco, numero_instalacao, contato, email, tipo_consumo,
@@ -108,26 +120,50 @@ async function inserirProposta(proposta, usuarioId) {
         tipo_tensao, valor_kwh, economia_media, economia_anual,
         valor_pago_flex_media, valor_pago_flex_anual, valor_pago_cemig_media, valor_pago_cemig_anual, classe
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 
+        $1, $2, $3, $4, $5, $6, $7, $8, 
+        $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 
         $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34
-      ) RETURNING id
-    `;
+      ) RETURNING id`;
     
+    // Consolidação do endereço para o banco
+    const enderecoCompleto = `${proposta.logradouro || proposta.rua || ''}, ${proposta.numero || ''} ${proposta.complemento || ''}, ${proposta.bairro || ''}, ${proposta.cidade || ''} - ${proposta.uf || proposta.estado || ''}`;
+
     const values = [
-        usuarioId,
-        proposta.nome, proposta.cpfCnpj, proposta.endereco, proposta.numeroInstalacao, proposta.contato, proposta.email || null, proposta.tipoConsumo,
-        proposta.janeiro || null, proposta.fevereiro || null, proposta.marco || null, proposta.abril || null, proposta.maio || null, proposta.junho || null,
-        proposta.julho || null, proposta.agosto || null, proposta.setembro || null, proposta.outubro || null, proposta.novembro || null, proposta.dezembro || null,
-        proposta.mediaConsumo || null, proposta.tipoPadrao, proposta.geracaoPropria, proposta.mediaInjecao || null, proposta.desconto || 0,
-        proposta.tipoTensao, proposta.valorKwh || 1.19, proposta.economiaMedia || 0, proposta.economiaAnual || 0,
-        proposta.valorPagoFlexMedia || 0, proposta.valorPagoFlexAnual || 0, proposta.valorPagoCemigMedia || 0, proposta.valorPagoCemigAnual || 0, proposta.classe
+      usuarioId,
+      proposta.nome,
+      proposta.cpfCnpj || proposta.cnpj || proposta.cpf,
+      enderecoCompleto,
+      proposta.uc || proposta.numeroInstalacao,
+      proposta.telefone || proposta.contato,
+      proposta.email,
+      proposta.tipoConsumo || 'media',
+      // Meses
+      parseFloat(proposta.janeiro || 0), parseFloat(proposta.fevereiro || 0), parseFloat(proposta.marco || 0),
+      parseFloat(proposta.abril || 0), parseFloat(proposta.maio || 0), parseFloat(proposta.junho || 0),
+      parseFloat(proposta.julho || 0), parseFloat(proposta.agosto || 0), parseFloat(proposta.setembro || 0),
+      parseFloat(proposta.outubro || 0), parseFloat(proposta.novembro || 0), parseFloat(proposta.dezembro || 0),
+      consumo,
+      proposta.fase || proposta.tipoPadrao || 'Trifásico',
+      proposta.geracaoPropria || 'nao',
+      parseFloat(proposta.mediaInjecao || 0),
+      parseFloat(proposta.desconto || 0),
+      proposta.tipoTensao || 'Baixa Tensao',
+      tarifa,
+      // Resultados Calculados
+      economiaMedia,
+      economiaMedia * 12,
+      valorPagoFlexMedia,
+      valorPagoFlexMedia * 12,
+      valorPagoCemigMedia,
+      valorPagoCemigMedia * 12,
+      proposta.categoria || proposta.classe || 'Comercial'
     ];
 
     try {
         const result = await pool.query(sql, values);
         return { success: true, id: result.rows[0].id };
     } catch (error) {
-        console.error('❌ Erro ao inserir proposta:', error);
+        console.error('❌ Erro no banco:', error.message);
         return { success: false, error: error.message };
     }
 }

@@ -5,8 +5,8 @@ FlexAuth.init(); // Protege a página
 // === CONSTANTES E ELEMENTOS DO DOM ===
 const VALOR_KWH_PADRAO = 1.19;
 const proposalForm = document.getElementById('proposalForm');
-if (!proposalForm) throw new Error('Formulário principal #proposalForm não encontrado.');
 
+// Verifica se os elementos existem antes de tentar usar
 const tipoTensao = document.getElementById('tipoTensao');
 const secaoBaixaTensao = document.getElementById('secaoBaixaTensao');
 const tipoConsumo = document.getElementById('tipoConsumo');
@@ -18,39 +18,75 @@ const cepInput = document.getElementById('cep');
 const cpfCnpjInput = document.getElementById('cpfCnpj');
 const contatoInput = document.getElementById('contato');
 
-document.body.classList.remove('loading');
+if (document.body.classList.contains('loading')) {
+    document.body.classList.remove('loading');
+}
 
-// === FUNÇÕES DE CONTROLE DO FORMULÁRIOS ===
+// === FUNÇÕES DE CONTROLE DO FORMULÁRIO ===
+
 function controlarSecaoBaixaTensao() {
     if (!tipoTensao || !secaoBaixaTensao) return;
-    const isBaixa = tipoTensao.value === 'baixa';
     
-    // Esta é a linha corrigida que apenas alterna a classe 'visible'
-    secaoBaixaTensao.classList.toggle('visible', isBaixa); 
+    // CORREÇÃO AQUI: O valor no HTML é "Baixa Tensao"
+    const isBaixa = tipoTensao.value === 'Baixa Tensao'; 
+    
+    if (isBaixa) {
+        secaoBaixaTensao.classList.remove('hidden-section');
+        secaoBaixaTensao.classList.add('visible'); // Usa classe 'visible' do CSS novo
+        secaoBaixaTensao.style.display = 'block'; // Força display block por garantia
+    } else {
+        secaoBaixaTensao.classList.remove('visible');
+        secaoBaixaTensao.classList.add('hidden-section');
+        secaoBaixaTensao.style.display = 'none';
+    }
     
     tornarCamposObrigatorios(isBaixa);
 }
 
 function tornarCamposObrigatorios(obrigatorio) {
-    ['tipoPadrao', 'geracaoPropria'].forEach(id => {
+    // Lista de IDs que devem ser obrigatórios apenas se for Baixa Tensão
+    const campos = ['tipoPadrao', 'tipoConsumo', 'valorKwh'];
+    
+    campos.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
-            element.required = !!obrigatorio;
-            if (!obrigatorio) element.value = '';
+            if (obrigatorio) {
+                element.setAttribute('required', 'required');
+            } else {
+                element.removeAttribute('required');
+                element.value = ''; // Limpa o valor se esconder
+            }
         }
     });
 }
 
 function alternarTipoConsumo() {
     if (!tipoConsumo || !consumoMensal || !consumoMedia) return;
+    
     const isMensal = tipoConsumo.value === 'mensal';
-    consumoMensal.classList.toggle('hidden', !isMensal);
-    consumoMedia.classList.toggle('hidden', isMensal);
+    
+    if (isMensal) {
+        consumoMensal.classList.remove('hidden');
+        consumoMedia.classList.add('hidden');
+    } else {
+        consumoMensal.classList.add('hidden');
+        consumoMedia.classList.remove('hidden');
+    }
 }
 
 function controlarInjecaoMedia() {
     if (!geracaoPropria || !injecaoMedia) return;
-    injecaoMedia.classList.toggle('hidden', geracaoPropria.value !== 'sim');
+    
+    // Valor no HTML é "sim" (minúsculo)
+    const temGeracao = geracaoPropria.value === 'sim';
+    
+    if (temGeracao) {
+        injecaoMedia.classList.remove('hidden');
+    } else {
+        injecaoMedia.classList.add('hidden');
+        const inputInjecao = document.getElementById('mediaInjecao');
+        if (inputInjecao) inputInjecao.value = ''; // Limpa valor
+    }
 }
 
 // === FUNÇÕES DE FORMATAÇÃO E API ===
@@ -77,31 +113,38 @@ async function buscarEnderecoPorCEP() {
         const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         const data = await response.json();
         if (!data.erro) {
-            document.getElementById('rua').value = data.logradouro || '';
-            document.getElementById('bairro').value = data.bairro || '';
-            document.getElementById('cidade').value = data.localidade || '';
-            document.getElementById('estado').value = data.uf || '';
-            document.getElementById('numero').focus();
+            if(document.getElementById('rua')) document.getElementById('rua').value = data.logradouro || '';
+            if(document.getElementById('bairro')) document.getElementById('bairro').value = data.bairro || '';
+            if(document.getElementById('cidade')) document.getElementById('cidade').value = data.localidade || '';
+            if(document.getElementById('estado')) document.getElementById('estado').value = data.uf || '';
+            if(document.getElementById('numero')) document.getElementById('numero').focus();
         } else {
             alert('CEP não encontrado.');
         }
     } catch (error) {
-        alert('Erro ao buscar CEP. Verifique sua conexão.');
+        // Silencioso ou alert, opcional
     }
 }
 
 // === LÓGICA DE CÁLCULO E ENVIO ===
-// Em Frontend/form-script.js
 
 function calcularEconomia(data) {
-    const valorKwh = parseFloat(data.valorKwh) || VALOR_KWH_PADRAO;
+    const valorKwh = parseFloat(data.tarifa) || parseFloat(data.valorKwh) || VALOR_KWH_PADRAO; // Pega 'tarifa' ou 'valorKwh'
     const desconto = parseFloat(data.desconto) || 0;
+    
     let economiaMedia = 0, economiaAnual = 0, valorPagoFlexMedia = 0, valorPagoFlexAnual = 0, valorPagoCemigMedia = 0, valorPagoCemigAnual = 0;
     
-    if (data.tipoTensao === 'baixa' && data.tipoPadrao) {
-        const custoDisponibilidadeKwh = {'monofasico': 30, 'bifasico': 50, 'trifasico': 100}[data.tipoPadrao] || 0;
+    // CORREÇÃO AQUI: Verifica "Baixa Tensao"
+    if (data.tipoTensao === 'Baixa Tensao' && data.fase) {
+        // data.fase vem do select name="fase" (Monofásico, Bifásico...)
+        const custoDisponibilidadeKwh = {
+            'Monofásico': 30, 
+            'Bifásico': 50, 
+            'Trifásico': 100
+        }[data.fase] || 0;
+
         const geracao = (data.geracaoPropria === 'sim') ? (parseFloat(data.mediaInjecao) || 0) : 0;
-        const custoIluminacaoPublica = 20; // Valor estimado fixo
+        const custoIluminacaoPublica = 20; 
         let consumoCalculado = 0;
 
         if (data.tipoConsumo === 'media') {
@@ -116,21 +159,16 @@ function calcularEconomia(data) {
                 }
                 return acc;
             }, { totalConsumo: 0, mesesPreenchidos: 0 });
+            
             consumoCalculado = mesesPreenchidos > 0 ? totalConsumo / mesesPreenchidos : 0;
         }
 
         if (consumoCalculado > 0) {
-            // 1. Calcula a economia sobre o que é compensável (Consumo - Disponibilidade)
+            // Lógica de cálculo simplificada para demonstração
             economiaMedia = Math.max(0, (consumoCalculado - custoDisponibilidadeKwh - geracao) * valorKwh * (desconto / 100));
-            
-            // 2. Fatura Cemig Atual (Referência)
             valorPagoCemigMedia = (consumoCalculado * valorKwh) + custoIluminacaoPublica;
-            
-            // 3. Nova Fatura (Fatura Atual - Economia)
-            // CORREÇÃO: Removemos o "+ (custoDisponibilidadeKwh * valorKwh)" que estava duplicando a cobrança
             valorPagoFlexMedia = valorPagoCemigMedia - economiaMedia;
             
-            // Totais Anuais
             economiaAnual = economiaMedia * 12;
             valorPagoFlexAnual = valorPagoFlexMedia * 12;
             valorPagoCemigAnual = valorPagoCemigMedia * 12;
@@ -139,59 +177,71 @@ function calcularEconomia(data) {
     return { economiaMedia, economiaAnual, valorPagoFlexMedia, valorPagoFlexAnual, valorPagoCemigMedia, valorPagoCemigAnual };
 }
 
+// No arquivo Frontend/form-script.js
+
 async function handleFormSubmit(e) {
     e.preventDefault();
     const formData = new FormData(proposalForm);
     const data = Object.fromEntries(formData.entries());
 
-    data.endereco = `${data.rua}, ${data.numero}${data.complemento ? ' - ' + data.complemento : ''}, ${data.bairro}, ${data.cidade} - ${data.estado}, CEP: ${data.cep}`;
-    Object.assign(data, calcularEconomia(data));
+    // 1. Tratamento de campos numéricos
+    for (let key in data) {
+        if (typeof data[key] === 'string' && data[key].includes(',')) {
+            data[key] = data[key].replace(',', '.');
+        }
+    }
 
-    ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro','mediaConsumo','mediaInjecao','desconto','valorKwh'].forEach(field => {
-        data[field] = data[field] ? parseFloat(data[field]) : null;
-    });
+    // 2. Cálculo da média no front apenas para garantir o dado se preenchido mês a mês
+    if (data.tipoConsumo === 'mensal') {
+        const meses = ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+        let soma = 0, count = 0;
+        meses.forEach(m => {
+            const val = parseFloat(data[m] || 0);
+            if(val > 0) { soma += val; count++; }
+        });
+        if(count > 0) data.mediaConsumo = (soma / count).toFixed(2);
+    }
 
     const submitBtn = proposalForm.querySelector('.btn-enviar');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '⏳ Enviando...';
     submitBtn.disabled = true;
 
     try {
         const response = await FlexAuth.fetchWithAuth('/api/propostas', {
             method: 'POST',
-            body: JSON.stringify(data)
+            body: JSON.stringify(data) // Enviamos apenas o que foi digitado
         });
         const result = await response.json();
 
         if (result.success) {
-            alert('✅ Proposta salva com sucesso! ID: ' + result.id);
-            window.location.href = `proposta.html?instalacao=${encodeURIComponent(data.numeroInstalacao)}`;
-        } else {
-            throw new Error(result.message);
+            alert('✅ Proposta salva!');
+            // Redireciona para a visualização usando a UC digitada
+            window.location.href = `proposta.html?instalacao=${data.uc}`;
         }
     } catch (error) {
-        alert(`❌ Erro ao salvar proposta: ${error.message}`);
+        alert(`❌ Erro: ${error.message}`);
     } finally {
-        submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     }
 }
 
 // === EVENT LISTENERS ===
-// Estes "escutadores" agora são anexados assim que o script é lido
-if (tipoTensao) tipoTensao.addEventListener('change', controlarSecaoBaixaTensao);
-if (tipoConsumo) tipoConsumo.addEventListener('change', alternarTipoConsumo);
-if (geracaoPropria) geracaoPropria.addEventListener('change', controlarInjecaoMedia);
-if (cepInput) {
-    cepInput.addEventListener('input', (e) => e.target.value = formatadores.cep(e.target.value));
-    cepInput.addEventListener('blur', buscarEnderecoPorCEP);
-}
-if (cpfCnpjInput) cpfCnpjInput.addEventListener('input', (e) => e.target.value = formatadores.cpfCnpj(e.target.value));
-if (contatoInput) contatoInput.addEventListener('input', (e) => e.target.value = formatadores.telefone(e.target.value));
-proposalForm.addEventListener('submit', handleFormSubmit);
+document.addEventListener('DOMContentLoaded', () => {
+    // Roda uma vez para garantir o estado inicial
+    controlarSecaoBaixaTensao();
+    alternarTipoConsumo();
+    controlarInjecaoMedia();
 
-// === INICIALIZAÇÃO ===
-// As funções rodam uma vez para configurar o estado inicial do formulário
-controlarSecaoBaixaTensao();
-alternarTipoConsumo();
-controlarInjecaoMedia();
+    // Adiciona os eventos
+    if (tipoTensao) tipoTensao.addEventListener('change', controlarSecaoBaixaTensao);
+    if (tipoConsumo) tipoConsumo.addEventListener('change', alternarTipoConsumo);
+    if (geracaoPropria) geracaoPropria.addEventListener('change', controlarInjecaoMedia);
+    
+    if (cepInput) {
+        cepInput.addEventListener('input', (e) => e.target.value = formatadores.cep(e.target.value));
+        cepInput.addEventListener('blur', buscarEnderecoPorCEP);
+    }
+    if (cpfCnpjInput) cpfCnpjInput.addEventListener('input', (e) => e.target.value = formatadores.cpfCnpj(e.target.value));
+    if (contatoInput) contatoInput.addEventListener('input', (e) => e.target.value = formatadores.telefone(e.target.value));
+    
+    if (proposalForm) proposalForm.addEventListener('submit', handleFormSubmit);
+});

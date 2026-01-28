@@ -10,7 +10,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     btn.disabled = true;
 
     try {
-        // --- CORREÇÃO AQUI: URL DO RENDER ---
+
         const response = await fetch('https://api.flexgrupo.com.br/api/usuarios/registrar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

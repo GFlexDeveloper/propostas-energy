@@ -8,63 +8,43 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 
-// --- BANCO DE DADOS (Configurado para o novo RDS via .env) ---
 const db = require('./database');
-
-// --- INTEGRAÇÃO SALESFORCE ---
 const { executarFluxoIntegracao } = require('./integracao-flow');
 
-// --- CONFIGURAÇÃO ---
 const app = express();
 const PORT = process.env.PORT || 6969;
 const JWT_SECRET = process.env.JWT_SECRET;
 const upload = multer({ storage: multer.memoryStorage() });
 
-// --- MIDDLEWARE ---
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Serve os arquivos estáticos da pasta Frontend
 app.use(express.static(path.join(__dirname, '../Frontend')));
 
-// Inicializa o banco de dados e cria o schema/tabelas automaticamente no RDS
-db.initDb().catch(err => {
-  console.error("❌ Falha ao inicializar o banco de dados RDS:", err);
-});
+db.initDb().catch(err => console.error("❌ Falha ao inicializar o banco RDS:", err));
 
 const { extrairTextoBruto, extrairCamposComLLM } = require('./Extraidados');
 
-// --- MIDDLEWARE DE AUTENTICAÇÃO ---
 function verificarToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ success: false, message: 'Acesso negado.' });
-    }
+    if (!token) return res.status(401).json({ success: false, message: 'Acesso negado.' });
 
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).json({ success: false, message: 'Token inválido.' });
-        }
+        if (err) return res.status(403).json({ success: false, message: 'Token inválido.' });
         req.usuario = decoded;
         next();
     });
 }
 
 // --- ROTAS DE AUTENTICAÇÃO ---
-
 app.post('/api/usuarios/registrar', async (req, res) => {
     try {
         const { nome, email, senha, cargo } = req.body;
         if (!nome || !email || !senha) return res.status(400).json({ success: false, message: 'Dados incompletos.' });
-
-        const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(senha, salt);
+        const hash = bcrypt.hashSync(senha, 10);
         const novoUsuario = await db.registrarUsuario(nome, email, hash, cargo);
-
-        res.status(201).json({ success: true, message: 'Usuário registrado!', id: novoUsuario.id });
+        res.status(201).json({ success: true, id: novoUsuario.id });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Erro ao registrar.' });
     }
@@ -74,26 +54,17 @@ app.post('/api/usuarios/login', async (req, res) => {
     try {
         const { email, senha } = req.body;
         const usuario = await db.buscarUsuarioPorEmail(email);
-
         if (!usuario || !bcrypt.compareSync(senha, usuario.senha)) {
             return res.status(401).json({ success: false, message: 'Credenciais inválidas.' });
         }
-
-        const token = jwt.sign({ 
-            id: usuario.id, 
-            email: usuario.email, 
-            nome: usuario.nome,
-            cargo: usuario.cargo 
-        }, JWT_SECRET, { expiresIn: '12h' });
-
-        res.json({ success: true, message: 'Login OK!', token: token });
+        const token = jwt.sign({ id: usuario.id, email: usuario.email, nome: usuario.nome, cargo: usuario.cargo }, JWT_SECRET, { expiresIn: '12h' });
+        res.json({ success: true, token });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Erro no login.' });
     }
 });
 
-// --- ROTAS DA APLICAÇÃO ---
-
+// --- ROTA DE UPLOAD PDF ---
 app.post('/api/upload-pdf', verificarToken, upload.single('pdfFile'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'Nenhum PDF enviado.' });
@@ -105,87 +76,60 @@ app.post('/api/upload-pdf', verificarToken, upload.single('pdfFile'), async (req
   }
 });
 
-// =========================================================================
-// 🚀 ROTA PRINCIPAL: SALVAR PROPOSTA E INTEGRAR COM SALESFORCE
-// =========================================================================
+// --- ROTA PRINCIPAL: SALVAR PROPOSTA E INTEGRAR SALESFORCE ---
 app.post('/api/propostas', verificarToken, async (req, res) => {
   try {
-    const proposta = req.body; // Dados vindos do formulário do Frontend
+    const propostaOriginal = req.body;
     const usuarioId = req.usuario.id;
 
-    // 1. Salva no Banco de Dados RDS (PostgreSQL)
-    const result = await db.inserirProposta(proposta, usuarioId);
+    // 1. Limpeza para o Banco de Dados (Remove campos de cálculo do front que não estão na tabela)
+    const propostaParaBanco = { ...propostaOriginal };
+    const camposExtras = ['economiaMedia', 'economiaAnual', 'valorPagoFlexMedia', 'valorPagoFlexAnual', 'valorPagoCemigMedia', 'valorPagoCemigAnual'];
+    camposExtras.forEach(campo => delete propostaParaBanco[campo]);
 
-    if (!result.success) {
-      throw new Error(result.error);
-    }
+    // Salva no RDS e obtém a faixa de consumo calculada
+    const result = await db.inserirProposta(propostaParaBanco, usuarioId);
+    if (!result.success) throw new Error(result.error);
 
-    // 2. Integração com Salesforce (Disparo automático em background)
+    // 2. Preparação para Salesforce
     console.log("⚡ [Server] Disparando integração com Salesforce...");
-    
     const dadosParaSalesforce = {
-        // --- Identificação ---
-        nomeConta: proposta.razaoSocial || proposta.nome, 
-        cnpj: proposta.cnpj, 
-        cpf: proposta.cpf,   
-        email: proposta.email,
-        telefone: proposta.telefone,
-        celular: proposta.celular || proposta.whatsapp,
+        nomeConta: propostaOriginal.razaoSocial || propostaOriginal.nome, 
+        cnpj: propostaOriginal.cnpj, 
+        cpf: propostaOriginal.cpf,   
+        email: propostaOriginal.email,
+        telefone: propostaOriginal.telefone || propostaOriginal.contato,
+        celular: propostaOriginal.celular || propostaOriginal.whatsapp,
         representante: req.usuario.nome || "", 
-
-        // --- Endereço ---
-        ruaCobranca: proposta.logradouro,
-        cidadeCobranca: proposta.cidade,
-        estadoCobranca: proposta.uf, 
-        cepCobranca: proposta.cep,
-        paisCobranca: "Brasil",
-
-        // --- Energia ---
-        numeroInstalacao: proposta.uc,
-        concessionaria: proposta.concessionaria || "Cemig",
-        loginConcessionaria: proposta.login,
-        senhaConcessionaria: proposta.senha,
-
-        // --- Características Técnicas (Picklists) ---
-        categoriaConta: proposta.categoria || "Pessoa Jurídica", 
-        tipoContaLuz: proposta.tipoTensao || "Baixa Tensao",     
-        faseContaLuz: proposta.fase || "Trifásico",              
-        temInscricaoEstadual: proposta.temIE || "Não",
-
-        // --- Financeiro ---
-        consumo: proposta.mediaConsumo || proposta.consumo, 
-        valorKwh: proposta.tarifa || 1.15,                      
-        valorTarifa: proposta.tarifaComImposto || 0.95,         
-        iluminacaoPublica: proposta.cip || 50.00,               
-        desconto: proposta.desconto || 0,                       
-        
-        // --- Detalhes do Contrato ---
-        tempoContrato: proposta.prazo || "120 Meses",
+        ruaCobranca: propostaOriginal.logradouro,
+        cidadeCobranca: propostaOriginal.cidade,
+        estadoCobranca: propostaOriginal.uf, 
+        cepCobranca: propostaOriginal.cep,
+        numeroInstalacao: propostaOriginal.uc || propostaOriginal.numeroInstalacao,
+        concessionaria: propostaOriginal.concessionaria || "Cemig",
+        loginConcessionaria: propostaOriginal.login,
+        senhaConcessionaria: propostaOriginal.senha,
+        categoriaConta: propostaOriginal.categoria || "Pessoa Jurídica", 
+        tipoContaLuz: propostaOriginal.tipoTensao || "Baixa Tensao",     
+        faseContaLuz: propostaOriginal.fase || "Trifásico",              
+        consumo: propostaOriginal.mediaConsumo || 0, 
+        valorKwh: propostaOriginal.tarifa || 1.15,                      
+        desconto: propostaOriginal.desconto || 0,                       
+        tempoContrato: propostaOriginal.prazo || "120 Meses",
         empresaProprietaria: "Flex Energy", 
         origem: "App vendedores externos",
-        
-        // Campos de suporte ao script
-        faixaConsumo: proposta.faixa || "2000 - 10000 kW",
-        pontosConexao: 1,
+        faixaConsumo: result.faixaCalculada, // Usa a faixa calculada no banco
         temperatura: "Quente"
     };
 
-    // Executa sem dar 'await' para responder ao usuário mais rápido
     executarFluxoIntegracao(dadosParaSalesforce)
-        .then(resInteg => {
-            if(resInteg.success) {
-                console.log(`✅ [Salesforce] Sucesso! OS Criada: ${resInteg.serviceOrderId}`);
-            } else {
-                console.error("❌ [Salesforce] Falha na integração:", resInteg.error);
-            }
-        })
+        .then(resInteg => console.log(resInteg.success ? `✅ [Salesforce] Criada OS: ${resInteg.serviceOrderId}` : `❌ [Salesforce] Falha: ${resInteg.error}`))
         .catch(err => console.error("❌ [Salesforce] Erro Crítico:", err));
 
-    // Resposta imediata para o Frontend
-    res.status(201).json({ success: true, message: 'Proposta salva e integração iniciada!', id: result.id });
+    res.status(201).json({ success: true, message: 'Proposta salva!', id: result.id });
 
   } catch (error) {
-    console.error("❌ Erro ao processar proposta:", error);
+    console.error("❌ Erro ao processar proposta:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -195,50 +139,26 @@ app.get('/api/propostas', verificarToken, async (req, res) => {
     const { id, cargo } = req.usuario;
     const isAdmin = cargo === 'Admin' || cargo === 'Administrador';
     const result = await db.listarPropostas(id, isAdmin);
-    
-    if (result.success) {
-      res.json({ success: true, data: result.data });
-    } else {
-      throw new Error(result.error);
-    }
+    res.json({ success: true, data: result.data });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Erro ao listar propostas.' });
   }
 });
 
-// --- ROTA DE WHATSAPP ---
 app.post('/api/enviar-whatsapp', verificarToken, upload.single('pdfFile'), async (req, res) => {
     try {
         const { phone, message, fileName } = req.body;
-        if (!req.file || !phone) return res.status(400).json({ success: false, message: 'Faltam dados para o envio.' });
-
         const base64File = req.file.buffer.toString('base64');
         const fileAsDataUrl = `data:application/pdf;base64,${base64File}`;
-        const UAZAPI_URL = 'https://flexgrupo.uazapi.com/send/media';
-
-        const { data } = await axios.post(UAZAPI_URL, {
-            number: phone,
-            type: 'document',
-            file: fileAsDataUrl,
-            docName: fileName || 'Proposta_Flex.pdf',
-            text: message || 'Olá, segue sua proposta oficial da Flex Energy.'
-        }, {
-            headers: { token: process.env.UAZAPI_TOKEN }
-        });
-
-        return res.json({ success: true, data });
+        const { data } = await axios.post('https://flexgrupo.uazapi.com/send/media', {
+            number: phone, type: 'document', file: fileAsDataUrl, docName: fileName || 'Proposta_Flex.pdf', text: message || 'Olá, segue proposta.'
+        }, { headers: { token: process.env.UAZAPI_TOKEN } });
+        res.json({ success: true, data });
     } catch (error) {
-        console.error('Erro Zap:', error.response?.data || error.message);
-        return res.status(500).json({ success: false, message: 'Erro no envio do WhatsApp.' });
+        res.status(500).json({ success: false, message: 'Erro no envio do WhatsApp.' });
     }
 });
 
-// SPA Redirect
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend', 'index.html'));
-});
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, '../Frontend', 'index.html')));
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
-  console.log(`📂 Servindo Frontend de: ${path.join(__dirname, '../Frontend')}`);
-});
+app.listen(PORT, () => console.log(`Servidor na porta ${PORT}`));
